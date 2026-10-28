@@ -125,6 +125,12 @@ button,textarea,input,select{font:inherit;color:inherit}
 #conectar h2{font-family:var(--d);font-weight:400;font-size:16px;letter-spacing:.06em;margin:0 0 8px}
 #conectar ol{padding-left:20px;margin:8px 0;font-size:14px;line-height:1.5}
 #conectar input{width:100%;border:1px solid var(--linea);border-radius:3px;padding:10px;font-family:var(--m);font-size:13px;margin:8px 0;background:#fff}
+#visor{position:fixed;inset:0;z-index:8;background:#1E2128;display:none;flex-direction:column}
+#visor.abierto{display:flex}
+#visor-volver{position:absolute;top:max(12px,env(safe-area-inset-top));left:12px;z-index:2;box-shadow:var(--sombra)}
+#visor-cuerpo{flex:1;display:flex;align-items:center;justify-content:center;overflow:auto;padding:60px 12px 12px}
+#visor-cuerpo iframe{width:100%;height:100%;border:0;background:#fff;border-radius:3px}
+#visor-cuerpo img{max-width:100%;max-height:100%;object-fit:contain;border-radius:2px}
 .toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-180%);transition:transform .25s;padding:10px 16px;z-index:9;max-width:calc(100vw - 32px);background:var(--grafito);color:var(--tiza);border-radius:3px;font-size:13.5px}
 .toast.ver{transform:translate(-50%,0)}
 #cargando{position:fixed;inset:0;display:grid;place-items:center;z-index:1;font-family:var(--m);font-size:12px;letter-spacing:.1em;color:#B9B2A4;pointer-events:none}
@@ -186,6 +192,7 @@ body.con-panel #resumen{opacity:0;pointer-events:none}
 <div class="velo" id="velo"></div>
 <aside class="panel" id="panel" aria-live="polite"></aside>
 <div class="toast" id="toast" role="status"></div>
+<div id="visor" role="dialog" aria-label="Diseño"><button class="btn" id="visor-volver">← Volver a la oficina</button><div id="visor-cuerpo"></div></div>
 
 <script type="module">
 import * as THREE from 'three';
@@ -998,7 +1005,7 @@ function abrirVista(cual, refresco) {
           ${x.riesgos ? `<span>Riesgos: ${esc(x.riesgos)}</span>` : ''}
           ${x.marketing ? `<span><b>Marketing:</b> ${esc(x.marketing)}</span>` : ''}</div>
         ${(x.fotos || []).length ? `<div class="fotos">${x.fotos.map(f => `<img data-foto="${esc(f)}" alt="${esc(x.prenda)}" loading="lazy">`).join('')}</div>` : ''}
-        <div class="acciones">${x.diseno ? `<button class="btn" data-pieza="${esc(x.diseno)}" ${token ? '' : 'disabled'}>Ver la lámina</button>` : '<span class="nota" style="margin:0">Diseño la dibuja en su próximo turno.</span>'}${(x.fotos || []).length ? '' : '<span class="nota" style="margin:0">Las fotos realistas salen con el próximo turno de Diseño.</span>'}</div>
+        <div class="acciones">${x.diseno ? `<button class="btn" data-pieza="${esc(x.diseno)}">Ver la lámina</button>` : '<span class="nota" style="margin:0">Diseño la dibuja en su próximo turno.</span>'}${(x.fotos || []).length ? '' : '<span class="nota" style="margin:0">Las fotos realistas salen con el próximo turno de Diseño.</span>'}</div>
         ${est === 'propuesta' ? `<textarea id="n-${esc(x.id)}" placeholder="¿Algo para cambiarle? (opcional)" style="min-height:44px;margin-top:8px"></textarea>
         <div class="acciones">${[['hacerla', 'La hacemos'], ['mas adelante', 'Más adelante'], ['descartada', 'Descartar']].map(([k, t], i) => `<button class="btn${i ? '' : ' primario'}" data-propuesta="${esc(x.archivo)}" data-decision="${k}" data-pid="${esc(x.id)}" ${token ? '' : 'disabled'}>${t}</button>`).join('')}</div>`
           : x.nota_mateo ? `<div class="nota">Tu nota: ${esc(x.nota_mateo)}</div>` : ''}</div>`; }).join('')
@@ -1069,12 +1076,33 @@ async function cargarFotos() {
     } catch (e) { img.alt = 'No se pudo cargar la foto'; }
   }
 }
+// el visor: las láminas y las fotos se abren adentro de la oficina (en el celular, una pestaña nueva no tiene cómo volver)
+function abrirVisor(contenido) {
+  $('#visor-cuerpo').innerHTML = '';
+  $('#visor-cuerpo').append(contenido);
+  $('#visor').classList.add('abierto');
+  // el botón "atrás" del celular cierra el visor en vez de salir de la oficina
+  if (!history.state || !history.state.visor) history.pushState({visor: true}, '');
+}
+function cerrarVisor(desdeAtras) {
+  if (!$('#visor').classList.contains('abierto')) return false;
+  $('#visor').classList.remove('abierto'); $('#visor-cuerpo').innerHTML = '';
+  if (!desdeAtras && history.state && history.state.visor) history.back();
+  return true;
+}
+addEventListener('popstate', () => cerrarVisor(true));
 async function verPieza(ruta) {
-  const w = window.open('', '_blank');
   try {
-    const html = await gh('/contents/' + ruta.split('/').map(encodeURIComponent).join('/') + '?ref=main', {}, 'application/vnd.github.raw+json');
-    w.document.open(); w.document.write(html); w.document.close();
-  } catch (err) { if (w) w.close(); toast('No pude abrir la pieza: ' + err.message); }
+    const html = token ? await gh('/contents/' + ruta.split('/').map(encodeURIComponent).join('/') + '?ref=main', {}, 'application/vnd.github.raw+json')
+      : await (await fetch(ruta)).text();
+    const marco = document.createElement('iframe');
+    marco.srcdoc = html; marco.title = ruta.split('/').pop();
+    abrirVisor(marco);
+  } catch (err) { toast('No pude abrir la pieza: ' + err.message); }
+}
+function verFoto(src, alt) {
+  const img = document.createElement('img'); img.src = src; img.alt = alt || '';
+  abrirVisor(img);
 }
 
 // ---------- panel de un empleado
@@ -1262,7 +1290,7 @@ document.addEventListener('click', ev => {
   const pr = ev.target.closest('[data-propuesta]');
   if (pr) return decidirPropuesta(pr.dataset.propuesta, pr.dataset.decision, pr.dataset.pid);
   const fo = ev.target.closest('img[data-foto]');
-  if (fo && fo.src) return window.open(fo.src, '_blank');
+  if (fo && fo.src) return verFoto(fo.src, fo.alt);
   const pz = ev.target.closest('[data-pieza]');
   if (pz) return verPieza(pz.dataset.pieza);
   const h = ev.target.closest('[data-hecho]');
@@ -1274,7 +1302,8 @@ document.addEventListener('click', ev => {
   const q = ev.target.closest('.chip,.av,a[data-id]');
   if (q && q.dataset.id) { ev.preventDefault(); abrir(q.dataset.id); }
 });
-document.addEventListener('keydown', ev => { if (ev.key === 'Escape') cerrar(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !cerrarVisor()) cerrar(); });
+$('#visor-volver').onclick = () => cerrarVisor();
 addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos', 'producto'].includes(id) ? abrirVista(id) : abrir(id); });
 $('#velo').onclick = cerrar;
 $('#paravos').onclick = () => abrirVista('paravos');
