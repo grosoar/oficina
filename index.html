@@ -193,7 +193,8 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 const REPO = 'grosoar/groso-oficina';
 const COLOR = {ok: '#5F8A6B', trabajando: '#1A1A1A', aviso: '#C49A2C', falla: '#B5462F', descanso: '#B9B7B0', pausa: '#B9B7B0'};
 const PALABRA = {ok: 'al día', trabajando: 'trabajando', aviso: 'ojo', falla: 'falló', descanso: 'descansa', pausa: 'en pausa'};
-const INICIAL = {jefa: 'J', tecnico: 'T', ventas: 'V'};
+const INICIAL = {jefa: 'J', tecnico: 'T', ventas: 'V', competencia: 'C', tendencias: 'P', diseno: 'D', marketing: 'M', contenido: 'IA'};
+const CON_IA = ['competencia', 'tendencias', 'diseno', 'marketing', 'contenido'];  // empleado.yml
 const FLUJO = {'turno.yml': 'Turno', 'jefa.yml': 'Reunión', 'arreglar.yml': 'Arreglar'};
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -271,6 +272,7 @@ const plata = n => n == null ? '—' : '$' + Math.round(n).toLocaleString('es-AR
 function empleadosDe(run) {
   const f = (run.path || '').split('/').pop(), t = run.display_title || '';
   if (f === 'jefa.yml') return ['jefa'];
+  if (f === 'empleado.yml') { const m = t.match(/\((\w+)\)\s*$/); return m ? [m[1]] : []; }
   if (f === 'arreglar.yml') { const m = t.match(/\((\w+)\)\s*$/); return m ? [m[1]] : []; }
   if (f === 'turno.yml') return t.includes('ventas') ? ['ventas'] : t.includes('tecnico') ? ['tecnico'] : ['tecnico', 'ventas'];
   return [];
@@ -394,6 +396,11 @@ const LOOK = {
   jefa: ['rodete', '#2B2119', '#1A1A1A', '#3A3936', '#E3BC98'],
   tecnico: ['corto', '#16120F', '#F1EFE9', '#1A1A1A', '#B98563'],
   ventas: ['largo', '#5B4030', '#1A1A1A', '#8E8A80', '#8A5B3D'],
+  competencia: ['corto', '#3A2A1E', '#5A5A55', '#1A1A1A', '#D9B08C'],
+  tendencias: ['rodete', '#7A4E2D', '#F1EFE9', '#5A5A55', '#C99A74'],
+  diseno: ['largo', '#111111', '#1A1A1A', '#1A1A1A', '#E8C4A0'],
+  marketing: ['corto', '#5B4030', '#E4E3DF', '#1A1A1A', '#8A5B3D'],
+  contenido: ['rodete', '#2B2119', '#1A1A1A', '#3A3936', '#B98563'],
 };
 
 function pelo(tipo, color, cabeza) {
@@ -487,17 +494,24 @@ function perchero(padre, x, z) {
 }
 
 // ---------- lugares: dónde se sienta cada uno [x, z, mira hacia (rotY)]
-const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [1.6, -1.2], ventas: [5.6, -1.2]};
-const PROXIMOS = [[-2.4, -6.0], [1.6, -6.0], [5.6, -6.0], [9.6, -6.0], [9.6, -1.2]];
+// dos filas: adelante los de la fase 1 y Marketing; atrás los que investigan y crean (miran hacia adelante)
+const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [1.6, -1.2], ventas: [5.6, -1.2], marketing: [9.6, -1.2],
+  competencia: [-2.4, -6.0], tendencias: [1.6, -6.0], diseno: [5.6, -6.0], contenido: [9.6, -6.0]};
+const PROXIMOS = [];  // escritorios vacíos con cartel (hoy no queda ninguno)
 const MESA = {x: -9.6, z: -5.6};
-const EN_MESA = {jefa: [MESA.x - 2.55, MESA.z, Math.PI / 2], tecnico: [MESA.x - .9, MESA.z - 1.05, 0], ventas: [MESA.x + .9, MESA.z - 1.05, 0]};
+// la mesa tiene 8 lugares: las dos cabeceras y tres por lado
+const EN_MESA = {jefa: [MESA.x - 2.55, MESA.z, Math.PI / 2], tecnico: [MESA.x - 1.4, MESA.z - 1.05, 0], ventas: [MESA.x, MESA.z - 1.05, 0],
+  marketing: [MESA.x + 1.4, MESA.z - 1.05, 0], competencia: [MESA.x - 1.4, MESA.z + 1.05, Math.PI], tendencias: [MESA.x, MESA.z + 1.05, Math.PI],
+  diseno: [MESA.x + 1.4, MESA.z + 1.05, Math.PI], contenido: [MESA.x + 2.55, MESA.z, -Math.PI / 2]};
 const MATEO = {x: -9.4, z: 4.2};
-const CON_MATEO = {jefa: [MATEO.x - .7, MATEO.z + 1.15, Math.PI], tecnico: [MATEO.x + .1, MATEO.z + 1.15, Math.PI], ventas: [MATEO.x + .9, MATEO.z + 1.15, Math.PI]};
+// cuatro sillas frente a tu escritorio: las ocupan, en orden, los que te necesitan
+const CON_MATEO = [[MATEO.x - 1.2, MATEO.z + 1.15, Math.PI], [MATEO.x - .4, MATEO.z + 1.15, Math.PI], [MATEO.x + .4, MATEO.z + 1.15, Math.PI], [MATEO.x + 1.2, MATEO.z + 1.15, Math.PI]];
+const sillaMateo = {};  // id → número de silla
 const PASILLO = -3.5;          // pasillo entre las dos filas de escritorios
 const PUERTA = [-6.6, -2.9];   // puerta de la sala de reunión
 function lugarDe(id, donde) {
   if (donde === 'mesa') return EN_MESA[id];
-  if (donde === 'mateo') return CON_MATEO[id];
+  if (donde === 'mateo') return CON_MATEO[sillaMateo[id] || 0];
   const [x, z] = ESCRITORIO[id]; return [x, z - .78, 0];
 }
 // camino de un lugar a otro, siempre por el pasillo (nadie atraviesa escritorios ni vidrios)
@@ -506,6 +520,8 @@ function salida(id, donde) {
   // los del lado de la pared rodean la mesa por la punta; la cabecera sale derecho hacia la puerta
   if (donde === 'mesa') return (z < MESA.z ? [[x, z], [MESA.x + 2.9, z]] : [[x, z], [x, MESA.z + 1.6]]).concat([[MESA.x + 2.9, MESA.z + 1.6], PUERTA, [-5, PASILLO]]);
   if (donde === 'mateo') return [[x, z], [x, z + .7], [-5, z + .7], [-5, PASILLO]];
+  // la fila de atrás rodea su escritorio por el costado antes de ir al pasillo
+  if (z < -5) return [[x, z], [x + 1.25, z], [x + 1.25, PASILLO], [-5, PASILLO]];
   return [[x, z], [x, PASILLO], [-5, PASILLO]];
 }
 function camino(id, de, a) {
@@ -550,7 +566,7 @@ function construir(of) {
   caja(.05, .05, 4.6, '#111', -6, 2.3, -6.7, mundo, false); caja(7, .05, .05, '#111', -9.5, 2.3, -2, mundo, false);
   caja(4.4, .06, 1.4, '#C9A27A', MESA.x, .78, MESA.z, mundo);
   for (const sx of [-1.9, 1.9]) caja(.06, .76, 1.1, '#111', MESA.x + sx, .38, MESA.z, mundo);
-  for (const x of [-.9, .9]) { silla(mundo, MESA.x + x, MESA.z - 1.05, 0); silla(mundo, MESA.x + x, MESA.z + 1.05, Math.PI); }
+  for (const x of [-1.4, 0, 1.4]) { silla(mundo, MESA.x + x, MESA.z - 1.05, 0); silla(mundo, MESA.x + x, MESA.z + 1.05, Math.PI); }
   silla(mundo, MESA.x - 2.55, MESA.z, Math.PI / 2); silla(mundo, MESA.x + 2.55, MESA.z, -Math.PI / 2);
   const cartelSala = new THREE.Mesh(new THREE.PlaneGeometry(1.6, .22), new THREE.MeshBasicMaterial({map: texto([['SALA DE REUNIÓN', 'Geist Mono', 34]], {ancho: 512, alto: 70, esp: 6, color: '#5A5A55'}), transparent: true}));
   cartelSala.position.set(-9.5, 2.05, -1.97); mundo.add(cartelSala);
@@ -558,7 +574,7 @@ function construir(of) {
   const tuyo = new THREE.Group(); tuyo.position.set(MATEO.x, 0, MATEO.z); tuyo.rotation.y = Math.PI; mundo.add(tuyo);
   escritorio(tuyo, 2.4); monitor(tuyo, 0, .15); silla(tuyo, 0, -.75);
   caja(.3, .02, .22, '#F1EFE9', .7, .835, .1, tuyo);
-  for (const [x, z] of Object.values(CON_MATEO)) silla(mundo, x, z, Math.PI);
+  for (const [x, z] of CON_MATEO) silla(mundo, x, z, Math.PI);
   const cartelMateo = new THREE.Mesh(new THREE.PlaneGeometry(.9, .26), new THREE.MeshBasicMaterial({map: texto([['MATEO', 'Michroma', 48]], {ancho: 360, alto: 100, esp: 8, fondo: '#1A1A1A', color: '#F1EFE9'})}));
   cartelMateo.position.set(MATEO.x, .97, MATEO.z - .02); cartelMateo.rotation.y = Math.PI; mundo.add(cartelMateo);
   const reverso = cartelMateo.clone(); reverso.rotation.y = 0; reverso.position.z = MATEO.z + .44; reverso.position.y = .66; mundo.add(reverso);
@@ -648,8 +664,11 @@ function aplicarEstados(of) {
       luz.material.color.set(COLOR[st]);
     }
     // dónde está: en la mesa si la reunión espera tus respuestas, en tu escritorio si te necesita, si no en el suyo
+    // a tu escritorio van los que te necesitan, en orden, mientras haya silla libre
     const meNecesita = pendientesDe(e.id).length > 0 && st !== 'trabajando';
-    ubicar(e.id, of.pausa ? 'escritorio' : reu ? 'mesa' : meNecesita ? 'mateo' : 'escritorio');
+    if (!meNecesita) delete sillaMateo[e.id];
+    else if (!(e.id in sillaMateo)) { const libre = CON_MATEO.findIndex((_, i) => !Object.values(sillaMateo).includes(i)); if (libre >= 0) sillaMateo[e.id] = libre; }
+    ubicar(e.id, of.pausa ? 'escritorio' : reu ? 'mesa' : e.id in sillaMateo ? 'mateo' : 'escritorio');
     const globo = document.querySelector(`.chip[data-id="${e.id}"] .globo`);
     if (!globo) continue;
     globo.className = 'globo' + ({aviso: ' ojo', falla: ' falla', ok: ' ok', descanso: ' zz', pausa: ' zz'}[st] || '');
@@ -808,7 +827,7 @@ function pintar() {
   $('#resumen').innerHTML = `<h2>Esta semana</h2>
     <div class="num"><div><small>Pedidos</small><b>${n.pedidos_semana ?? '—'}</b></div><div><small>Ventas</small><b>${n.ventas_semana != null ? plata(n.ventas_semana) : '—'}</b></div>
     <div><small>Socios</small><b>${n.socios ?? '—'}</b></div><div><small>${dias != null && dias >= 0 ? 'Lanzamiento' : 'Velocidad'}</small><b>${dias != null && dias >= 0 ? dias + ' d' : (n.velocidad ?? '—')}</b></div></div>
-    <h2>El equipo</h2>${of.empleados.map(e => { const st = estadoReal(e); return `<div class="fila"><i style="background:${COLOR[st]}"></i><div><b style="font-weight:500">${esc(e.nombre)}</b> · ${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'trabajando ahora' : e.resumen)}</div></div>`; }).join('')}
+    <h2>El equipo</h2>${of.empleados.map(e => { const st = estadoReal(e); return `<div class="fila"><i style="background:${COLOR[st]}"></i><div><b style="font-weight:500">${esc(e.nombre)}</b> · ${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'trabajando ahora' : e.resumen.length > 90 ? e.resumen.slice(0, 88) + '…' : e.resumen)}</div></div>`; }).join('')}
     <div class="nota" style="margin-top:12px">Claude, últimos 7 días: ${u.turnos || 0} turnos · ${String(u.minutos || 0).replace('.', ',')} min (Sonnet)</div>`;
   const reu = of.reunion;
   $('#dock').innerHTML = of.empleados.map(e => {
@@ -892,6 +911,22 @@ const temaHTML = () => `<h3>Dejale un tema a la Jefa</h3><textarea id="t-tema" p
   <div class="acciones"><button class="btn" id="b-tema" ${token ? '' : 'disabled'}>Anotar para la reunión</button></div>`;
 const conectarTema = () => { if ($('#b-tema')) $('#b-tema').onclick = mandarTema; };
 
+// ---------- lo que entregó un empleado con IA (hallazgos, ideas, preguntas y, en Diseño, las piezas)
+function trabajoIA(e) {
+  const link = u => /^https?:/.test(u || '') ? ` <a class="link" href="${esc(u)}" target="_blank" rel="noopener">ver</a>` : '';
+  return ((e.archivos || []).length ? `<h3>Piezas</h3>${e.archivos.map(a => `<div class="item"><b>${esc(a.split('/').pop().replace(/\.html$/, ''))}</b><div class="acciones"><button class="btn" data-pieza="${esc(a)}" ${token ? '' : 'disabled'}>Ver la pieza</button></div></div>`).join('')}` : '')
+    + ((e.hallazgos || []).length ? `<h3>Lo que encontró</h3>${e.hallazgos.map(h => `<div class="item"><b>${esc(h.titulo)}</b><div class="meta">${esc(h.detalle)}${link(h.link)}</div></div>`).join('')}` : '')
+    + ((e.ideas || []).length ? `<h3>Ideas para la Jefa</h3><ul>${e.ideas.map(i => `<li>${esc(i.titulo)}${link(i.fuente)}</li>`).join('')}</ul><div class="nota">La Jefa las filtra: si valen la pena, te llegan en la reunión.</div>` : '')
+    + ((e.preguntas || []).length ? `<h3>Sus preguntas</h3><ul>${e.preguntas.map(q => `<li>${esc(q.texto)}</li>`).join('')}</ul><div class="nota">Las contestás en la reunión del domingo, o dejale el tema a la Jefa.</div>` : '');
+}
+async function verPieza(ruta) {
+  const w = window.open('', '_blank');
+  try {
+    const html = await gh('/contents/' + ruta.split('/').map(encodeURIComponent).join('/') + '?ref=main', {}, 'application/vnd.github.raw+json');
+    w.document.open(); w.document.write(html); w.document.close();
+  } catch (err) { if (w) w.close(); toast('No pude abrir la pieza: ' + err.message); }
+}
+
 // ---------- panel de un empleado
 function abrir(id, refresco) {
   const of = datos, e = of && of.empleados.find(x => x.id === id);
@@ -910,9 +945,10 @@ function abrir(id, refresco) {
       <select id="s-dia" aria-label="Día">${['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'].map(d => `<option ${r.dia === d ? 'selected' : ''}>${d}</option>`).join('')}</select>
       <select id="s-hora" aria-label="Hora">${Array.from({length: 24}, (_, h) => `<option value="${h}" ${r.hora === h ? 'selected' : ''}>${h}:00</option>`).join('')}</select>
       <button class="btn" id="b-ritmo" ${token ? '' : 'disabled'}>Guardar</button></div>
-    <div class="nota">Ahora: ${esc(e.horario)}. Próximo turno: ${e.proximo ? esc(en(fecha(e.proximo))) : 'en pausa'}.${e.id === 'jefa' ? ' La Jefa usa Claude: más seguido = más cuota.' : ' Sin IA: no gasta cuota de Claude.'}</div>`;
+    <div class="nota">Ahora: ${esc(e.horario)}. Próximo turno: ${e.proximo ? esc(en(fecha(e.proximo))) : 'en pausa'}.${e.id === 'jefa' || CON_IA.includes(e.id) ? ' Usa Claude (Sonnet): más seguido = más cuota.' : ' Sin IA: no gasta cuota de Claude.'}</div>`;
   const extra = e.id === 'jefa' ? `<div class="acciones"><button class="btn primario" data-vista="reunion">${of.reunion ? 'Ver la reunión' : 'Reunión semanal'}</button></div>${temaHTML()}`
-    : e.id === 'ventas' && pendientesDe('ventas').some(p => p.hecho_boton) ? `<div class="acciones"><button class="btn primario" data-vista="paravos">Ver lo que hay que mandar</button></div>` : '';
+    : e.id === 'ventas' && pendientesDe('ventas').some(p => p.hecho_boton) ? `<div class="acciones"><button class="btn primario" data-vista="paravos">Ver lo que hay que mandar</button></div>`
+    : CON_IA.includes(e.id) ? trabajoIA(e) : '';
   abrirPanel(`<div class="cab"><span class="cara">${INICIAL[e.id]}<span class="pt" style="background:${COLOR[st]}"></span></span>
       <div><h2>${esc(e.nombre)}</h2><div class="puesto">${esc(e.puesto.toUpperCase())}</div></div></div>
     <span class="pill c-${st}">${PALABRA[st]}</span> <span style="font-size:13px;color:var(--gris)">· último movimiento ${hace(fecha(e.cuando))}</span>
@@ -920,7 +956,7 @@ function abrir(id, refresco) {
     ${e.arreglo ? `<div class="caja ojo"><b>Cómo se arregla:</b> ${esc(e.arreglo)}</div>` : ''}
     ${extra}
     ${seccionArreglo(e, st)}
-    ${e.tareas.length ? `<h3>${e.id === 'tecnico' ? 'Errores de las visitas (Sentry)' : 'Tareas'}</h3><ul>${e.tareas.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    ${e.tareas.length && !CON_IA.includes(e.id) ? `<h3>${e.id === 'tecnico' ? 'Errores de las visitas (Sentry)' : 'Tareas'}</h3><ul>${e.tareas.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
     ${e.detalle.length ? `<h3>${e.id === 'tecnico' ? 'Última vuelta' : 'Registro'}</h3><pre class="registro">${esc(e.detalle.join('\n'))}</pre>` : ''}
     ${ritmoHTML}
     <h3>En GitHub</h3><div class="gh" style="font-size:14px">${gh}</div>
@@ -964,6 +1000,7 @@ function seccionArreglo(e, st) {
     <div class="acciones"><button class="btn primario" id="b-arreglar" ${token ? '' : 'disabled'}>Arreglar ahora</button></div>`);
 }
 async function pedirArreglo(e, st) {
+  if ((datos.pendientes || []).some(p => p.id === 'conectar-claude')) return toast('Primero hay que conectar Claude en la nube (herramientas/conectar_claude.ps1): sin eso el técnico no puede trabajar.');
   const nota = $('#t-nota') ? $('#t-nota').value.trim() : '';
   const id = Date.now().toString(36) + '-' + e.id;
   const problema = [`${e.nombre} (${e.puesto}) está en "${PALABRA[st]}": ${e.resumen}`, e.arreglo ? 'Lo que sugiere la oficina: ' + e.arreglo : '',
@@ -1061,6 +1098,8 @@ function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add
 
 // ================= eventos
 document.addEventListener('click', ev => {
+  const pz = ev.target.closest('[data-pieza]');
+  if (pz) return verPieza(pz.dataset.pieza);
   const h = ev.target.closest('[data-hecho]');
   if (h) return marcarHecho(h.dataset.hecho, h.dataset.como);
   const a = ev.target.closest('[data-arreglo]');
