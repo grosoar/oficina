@@ -1,0 +1,1096 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="GROSO Oficina">
+<meta name="theme-color" content="#1A1A1A">
+<title>GROSO · Oficina</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%231A1A1A'/%3E%3Ctext x='32' y='41' font-family='Arial' font-weight='700' font-size='26' fill='%23F1EFE9' text-anchor='middle'%3EG%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!--
+  La oficina de GROSO, en 3D: cada empleado (Jefa, Técnico web, Ventas y operaciones) en su escritorio.
+  Datos: estado/oficina.json del repo privado grosoar/groso-oficina (lo escribe herramientas/oficina.py en cada turno),
+  leídos con el token de Mateo (queda solo en este navegador), más las corridas de GitHub Actions en vivo.
+  Abierta como OFICINA.html (python -I oficina.py --html) trae los datos adentro y anda sin token.
+  Link directo: #tecnico, #reunion, #paravos
+-->
+<!--DATOS-->
+<script type="importmap">
+{"imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+}}
+</script>
+<style>
+:root{
+  --piedra:#E4E3DF;--grafito:#1A1A1A;--tiza:#F1EFE9;--niebla:#F3F3F1;--gris:#5A5A55;--linea:#DAD9D4;--rojo:#B5462F;
+  --ok:#5F8A6B;--ojo:#C49A2C;--suave:#8B8A85;
+  --d:'Michroma',system-ui,sans-serif;--t:'Geist',system-ui,sans-serif;--m:'Geist Mono',ui-monospace,monospace;
+  --sombra:0 8px 28px rgba(26,26,26,.10),0 1px 3px rgba(26,26,26,.08);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{font-family:var(--t);color:var(--grafito);background:var(--piedra);-webkit-tap-highlight-color:transparent;font-size:15px}
+button,textarea,input,select{font:inherit;color:inherit}
+#mundo{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;outline:none}
+.hud{position:fixed;z-index:3}
+.tarj{background:rgba(241,239,233,.95);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid var(--linea);border-radius:4px;box-shadow:var(--sombra)}
+#arriba{top:max(12px,env(safe-area-inset-top));left:12px;right:12px;display:flex;gap:10px;align-items:flex-start;justify-content:space-between;pointer-events:none}
+#arriba>*{pointer-events:auto}
+.marca{padding:12px 16px}
+.marca h1{margin:0;font-family:var(--d);font-weight:400;font-size:19px;letter-spacing:.14em;line-height:1}
+.marca h1 span{font-family:var(--t);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gris);margin-left:10px;vertical-align:3px}
+.marca .sub{font-family:var(--m);font-size:11px;color:var(--gris);margin-top:7px}
+.botones{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.btn{border:1px solid var(--linea);background:var(--tiza);border-radius:3px;padding:8px 12px;font-weight:500;font-size:13px;cursor:pointer;transition:background .15s,border-color .15s;letter-spacing:.01em}
+.btn:hover{border-color:var(--grafito)}
+.btn.primario{background:var(--grafito);border-color:var(--grafito);color:var(--tiza)}
+.btn.primario:hover{background:#000}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+#paravos{display:none;margin-top:8px;background:var(--grafito);color:var(--tiza);border:0;border-radius:3px;padding:8px 14px 8px 9px;font-weight:500;font-size:13px;cursor:pointer;box-shadow:var(--sombra);align-items:center;gap:9px}
+#paravos b{background:var(--rojo);color:#fff;border-radius:2px;min-width:20px;height:20px;display:grid;place-items:center;font-size:12px;font-family:var(--m)}
+#resumen{top:150px;left:12px;width:290px;padding:14px 16px;max-height:calc(100vh - 280px);overflow:auto}
+#resumen h2,.panel h3{font-family:var(--m);font-weight:500;font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--gris);margin:0 0 8px}
+.num{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--linea);border:1px solid var(--linea);margin-bottom:12px}
+.num div{background:var(--tiza);padding:9px 10px}
+.num small{font-family:var(--m);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
+.num b{display:block;font-family:var(--d);font-weight:400;font-size:17px;margin-top:3px}
+.fila{display:flex;gap:8px;align-items:baseline;padding:7px 0;border-top:1px solid var(--linea);font-size:13px;line-height:1.35}
+.fila:first-of-type{border-top:0}
+.fila i{width:7px;height:7px;border-radius:50%;flex:none;transform:translateY(-1px)}
+#etiquetas{position:fixed;inset:0;pointer-events:none;z-index:2;overflow:hidden}
+.chip{position:absolute;left:0;top:0;transform:translate(-50%,-100%);display:flex;flex-direction:column;align-items:center;gap:4px;pointer-events:auto;cursor:pointer;white-space:nowrap;will-change:transform}
+.globo{background:var(--grafito);color:var(--tiza);border-radius:2px;font-family:var(--m);font-size:11px;padding:3px 8px;line-height:1.3;display:flex;align-items:center;gap:3px}
+.globo.ojo{background:var(--ojo);color:var(--grafito)}
+.globo.falla{background:var(--rojo);color:#fff;animation:late 1s ease-in-out infinite}
+.globo.ok{background:var(--tiza);color:var(--ok);border:1px solid var(--linea)}
+.globo.zz{background:var(--tiza);color:var(--suave);border:1px solid var(--linea)}
+.globo .d{width:3px;height:3px;border-radius:50%;background:var(--tiza);animation:punto 1.2s infinite}
+.globo .d:nth-child(2){animation-delay:.2s}.globo .d:nth-child(3){animation-delay:.4s}
+@keyframes punto{0%,60%,100%{opacity:.35}30%{opacity:1}}
+@keyframes late{50%{transform:scale(1.1)}}
+.nombre{background:rgba(241,239,233,.96);border:1px solid var(--linea);border-radius:2px;font-size:11.5px;font-weight:500;padding:2px 8px;letter-spacing:.02em}
+.chip.sel .nombre{background:var(--grafito);color:var(--tiza);border-color:var(--grafito)}
+#dock{bottom:max(12px,env(safe-area-inset-bottom));left:0;right:0;margin:0 auto;width:max-content;max-width:calc(100vw - 24px);display:flex;align-items:center;gap:2px;padding:6px;overflow-x:auto;scrollbar-width:none}
+#dock::-webkit-scrollbar{display:none}
+.av{border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;padding:5px 8px;border-radius:3px;flex:none;min-width:64px}
+.av:hover,.av.sel{background:var(--piedra)}
+.av .cara{width:34px;height:34px;border-radius:50%;background:var(--grafito);color:var(--tiza);display:grid;place-items:center;font-family:var(--d);font-size:12px;position:relative}
+.av .pt{position:absolute;right:-2px;bottom:-2px;width:11px;height:11px;border-radius:50%;border:2px solid var(--tiza)}
+.av small{font-size:10.5px;font-weight:500;max-width:84px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sep{width:1px;align-self:stretch;background:var(--linea);margin:4px 4px;flex:none}
+.av.txt .cara{background:var(--piedra);color:var(--grafito);border:1px solid var(--linea)}
+.av.txt .cara b{position:absolute;top:-4px;right:-6px;background:var(--rojo);color:#fff;border-radius:2px;font-family:var(--m);font-size:10px;padding:0 4px;line-height:15px}
+.velo{position:fixed;inset:0;background:rgba(26,26,26,.18);opacity:0;pointer-events:none;transition:opacity .2s;z-index:4}
+.velo.abierto{opacity:1;pointer-events:auto}
+.panel{position:fixed;top:12px;right:12px;bottom:12px;width:min(460px,calc(100vw - 24px));overflow:auto;padding:22px;transform:translateX(115%);transition:transform .28s cubic-bezier(.2,.8,.2,1);z-index:5;background:var(--tiza);border:1px solid var(--linea);border-radius:4px;box-shadow:var(--sombra)}
+.panel.abierto{transform:none}
+.panel h2{margin:0;font-family:var(--d);font-weight:400;font-size:19px;letter-spacing:.06em;line-height:1.25}
+.panel h3{margin:22px 0 8px}
+.panel .cab{display:flex;gap:12px;align-items:center;margin-bottom:12px;padding-right:44px}
+.panel .cara{width:46px;height:46px;border-radius:50%;background:var(--grafito);color:var(--tiza);display:grid;place-items:center;font-family:var(--d);font-size:15px;position:relative;flex:none}
+.panel .cara .pt{position:absolute;right:-1px;bottom:-1px;width:14px;height:14px;border-radius:50%;border:2.5px solid var(--tiza)}
+.panel .cerrar{position:absolute;top:16px;right:16px;padding:6px 10px}
+.panel .res{font-size:16px;line-height:1.4;margin:10px 0}
+.panel ul{margin:0;padding-left:18px}
+.panel li{margin:4px 0;font-size:14px;line-height:1.4}
+.puesto{font-family:var(--m);font-size:11px;color:var(--gris);letter-spacing:.04em;margin-top:3px}
+.pill{display:inline-block;font-family:var(--m);font-size:10.5px;padding:2px 8px;border-radius:2px;text-transform:uppercase;letter-spacing:.08em}
+.c-ok{background:var(--ok);color:#fff}.c-trabajando{background:var(--grafito);color:var(--tiza)}.c-aviso{background:var(--ojo)}
+.c-falla{background:var(--rojo);color:#fff}.c-descanso,.c-pausa{background:var(--linea)}
+.registro{font-family:var(--m);font-size:11px;line-height:1.55;background:var(--niebla);border:1px solid var(--linea);border-radius:3px;padding:10px;white-space:pre-wrap;word-break:break-word;max-height:240px;overflow:auto;margin:0}
+.caja{background:var(--niebla);border:1px solid var(--linea);border-left:3px solid var(--grafito);border-radius:3px;padding:11px 13px;font-size:14px;line-height:1.45}
+.caja.ojo{border-left-color:var(--ojo)}.caja.mal{border-left-color:var(--rojo)}.caja.bien{border-left-color:var(--ok)}
+.panel a.link,.gh a{color:var(--grafito);font-weight:500;text-underline-offset:3px}
+.panel textarea,.panel input[type=text]{width:100%;min-height:70px;border:1px solid var(--linea);border-radius:3px;padding:10px;background:#fff;resize:vertical;font-size:14px}
+.panel select{border:1px solid var(--linea);border-radius:3px;padding:7px 8px;background:#fff;font-size:14px}
+.acciones{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.nota{font-size:12.5px;color:var(--gris);margin-top:7px;line-height:1.45}
+.item{border:1px solid var(--linea);background:#fff;border-radius:3px;padding:12px 13px;margin:8px 0}
+.item b{font-weight:600}
+.item .meta{font-size:12.5px;color:var(--gris);margin-top:6px;line-height:1.45}
+.item .meta span{display:block}
+.opciones{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.opciones button{border:1px solid var(--linea);background:var(--tiza);border-radius:2px;padding:5px 10px;font-size:13px;cursor:pointer}
+.opciones button.si{background:var(--grafito);color:var(--tiza);border-color:var(--grafito)}
+#conectar{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(470px,calc(100vw - 24px));padding:22px;z-index:6;display:none;background:var(--tiza);border:1px solid var(--linea);border-radius:4px;box-shadow:var(--sombra)}
+#conectar h2{font-family:var(--d);font-weight:400;font-size:16px;letter-spacing:.06em;margin:0 0 8px}
+#conectar ol{padding-left:20px;margin:8px 0;font-size:14px;line-height:1.5}
+#conectar input{width:100%;border:1px solid var(--linea);border-radius:3px;padding:10px;font-family:var(--m);font-size:13px;margin:8px 0;background:#fff}
+.toast{position:fixed;left:50%;top:14px;transform:translate(-50%,-180%);transition:transform .25s;padding:10px 16px;z-index:9;max-width:calc(100vw - 32px);background:var(--grafito);color:var(--tiza);border-radius:3px;font-size:13.5px}
+.toast.ver{transform:translate(-50%,0)}
+#cargando{position:fixed;inset:0;display:grid;place-items:center;z-index:1;font-family:var(--m);font-size:12px;letter-spacing:.1em;color:var(--gris);pointer-events:none}
+.oculto{display:none!important}
+body.con-panel #resumen{opacity:0;pointer-events:none}
+#resumen{transition:opacity .2s}
+@media (max-width:760px){
+  #resumen{display:none}
+  .marca h1{font-size:16px}
+  .marca h1 span{display:none}
+  .chip .nombre{display:none}
+  .chip.sel .nombre{display:block}
+  .panel{top:auto;left:8px;right:8px;bottom:8px;width:auto;max-height:64vh;transform:translateY(115%)}
+  .panel.abierto{transform:none}
+  .btn{padding:7px 9px}
+  .btn .t{display:none}
+  .av{min-width:52px;padding:5px 5px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<canvas id="mundo" tabindex="0" aria-label="La oficina de GROSO en 3D: tocá a un empleado para ver qué está haciendo"></canvas>
+<div id="cargando">ARMANDO LA OFICINA</div>
+<div id="etiquetas"></div>
+
+<div class="hud" id="arriba">
+  <div>
+    <div class="tarj marca">
+      <h1>GROSO<span>Oficina</span></h1>
+      <div class="sub" id="sub">cargando…</div>
+    </div>
+    <button id="paravos"><b>0</b><span></span></button>
+  </div>
+  <div class="botones">
+    <button class="btn" id="b-actualizar" title="Volver a leer el estado">↻<span class="t"> Actualizar</span></button>
+    <button class="btn" id="b-vista" title="Ver toda la oficina">⌂<span class="t"> Vista</span></button>
+    <button class="btn" id="b-pausa">❙❙<span class="t"> Pausar todo</span></button>
+    <button class="btn" id="b-token">Conectar</button>
+  </div>
+</div>
+
+<section class="hud tarj" id="resumen" aria-label="Resumen"></section>
+<nav class="hud tarj" id="dock" aria-label="El equipo"></nav>
+
+<div id="conectar">
+  <h2>Conectar la oficina</h2>
+  <p style="margin:6px 0;font-size:14px;line-height:1.5">La oficina lee el estado del repo privado <code>grosoar/groso-oficina</code>. La clave queda guardada solo en este navegador y solo se manda a GitHub.</p>
+  <ol>
+    <li>Con la cuenta <b>grosoar</b>, abrí <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub → Fine-grained token nuevo</a>.</li>
+    <li>Nombre: uno por aparato (ej. <b>oficina-celular</b>) · Vencimiento: 1 año · Repository access: <b>Only select repositories → groso-oficina</b>.</li>
+    <li>Permissions: <b>Contents</b> y <b>Actions</b> en <b>Read and write</b>.</li>
+    <li>Generá el token, copialo y pegalo acá:</li>
+  </ol>
+  <input id="i-token" type="password" autocomplete="off" placeholder="github_pat_…" aria-label="Token de GitHub">
+  <div class="acciones"><button class="btn primario" id="b-guardar">Conectar</button><button class="btn" id="b-cancelar">Cancelar</button></div>
+</div>
+
+<div class="velo" id="velo"></div>
+<aside class="panel" id="panel" aria-live="polite"></aside>
+<div class="toast" id="toast" role="status"></div>
+
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+
+const REPO = 'grosoar/groso-oficina';
+const COLOR = {ok: '#5F8A6B', trabajando: '#1A1A1A', aviso: '#C49A2C', falla: '#B5462F', descanso: '#B9B7B0', pausa: '#B9B7B0'};
+const PALABRA = {ok: 'al día', trabajando: 'trabajando', aviso: 'ojo', falla: 'falló', descanso: 'descansa', pausa: 'en pausa'};
+const INICIAL = {jefa: 'J', tecnico: 'T', ventas: 'V'};
+const FLUJO = {'turno.yml': 'Turno', 'jefa.yml': 'Reunión', 'arreglar.yml': 'Arreglar'};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const guardado = (k, v) => { try { if (v === undefined) return localStorage.getItem(k) || ''; v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) { return ''; } };
+
+let token = guardado('groso_oficina_token');
+let datos = window.DATOS || null, corridas = [], fuente = window.DATOS ? 'copia local' : '', pausado = null;
+let abierto = null, vista = null, desdeLink = decodeURIComponent(location.hash.slice(1)) || null;
+
+// ================= GitHub
+async function gh(ruta, opciones = {}, aceptar = 'application/vnd.github+json') {
+  const r = await fetch('https://api.github.com/repos/' + REPO + ruta, {
+    cache: 'no-store', ...opciones,
+    headers: {Authorization: 'Bearer ' + token, Accept: aceptar, 'X-GitHub-Api-Version': '2022-11-28', ...(opciones.body ? {'Content-Type': 'application/json'} : {})},
+  });
+  if (r.status === 404 && opciones.permitir404) return null;
+  if (!r.ok) throw new Error((r.status === 401 ? 'la clave no sirve o venció' : r.status === 403 ? 'a la clave le faltan permisos' : r.status === 409 ? 'alguien lo cambió recién, probá de nuevo' : 'GitHub respondió ' + r.status) + ' (' + ruta.split('?')[0] + ')');
+  return r.status === 204 ? true : aceptar.includes('raw') ? r.text() : r.json();
+}
+const a64 = s => { let b = ''; for (const x of new TextEncoder().encode(s)) b += String.fromCharCode(x); return btoa(b); };
+const de64 = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, '')), c => c.charCodeAt(0)));
+async function leerArchivo(ruta, defecto) {
+  const f = await gh('/contents/' + ruta + '?ref=main', {permitir404: true});
+  if (!f) return {sha: undefined, texto: defecto};
+  return {sha: f.sha, texto: de64(f.content)};
+}
+async function escribirArchivo(ruta, texto, sha, mensaje) {
+  return gh('/contents/' + ruta, {method: 'PUT', body: JSON.stringify({message: mensaje, content: a64(texto), branch: 'main', ...(sha ? {sha} : {})})});
+}
+// lee, cambia y guarda un JSON del repo (con reintento si alguien lo cambió en el medio)
+async function cambiarJSON(ruta, cambio, mensaje, defecto = {}) {
+  for (let i = 0; i < 3; i++) {
+    const {sha, texto} = await leerArchivo(ruta, JSON.stringify(defecto));
+    const d = JSON.parse(texto || '{}'); cambio(d);
+    try { return await escribirArchivo(ruta, JSON.stringify(d, null, 1) + '\n', sha, mensaje); }
+    catch (e) { if (!String(e.message).includes('cambió recién') || i === 2) throw e; }
+  }
+}
+
+async function cargar() {
+  if (token) {
+    try {
+      const [crudo, runs, pausa] = await Promise.all([
+        gh('/contents/estado/oficina.json?ref=main', {}, 'application/vnd.github.raw+json'),
+        gh('/actions/runs?per_page=30').catch(() => ({workflow_runs: []})),
+        gh('/contents/PAUSA?ref=main', {permitir404: true}).catch(() => null),
+      ]);
+      datos = JSON.parse(crudo); corridas = runs.workflow_runs || []; pausado = pausa; fuente = 'en vivo';
+    } catch (e) { toast('No pude leer GitHub: ' + e.message); }
+  }
+  pintar();
+}
+
+// ================= tiempo (los registros se escriben en hora de Argentina)
+const fecha = c => c ? new Date(c.length <= 16 ? c + ':00-03:00' : c) : null;
+function hace(d) {
+  if (!d) return 'nunca';
+  const m = Math.round((Date.now() - d) / 60000);
+  if (m < 1) return 'recién';
+  if (m < 60) return 'hace ' + m + ' min';
+  if (m < 2880) return 'hace ' + Math.round(m / 60) + ' h';
+  return 'hace ' + Math.round(m / 1440) + ' días';
+}
+function en(d) {
+  if (!d) return '—';
+  const m = Math.round((d - Date.now()) / 60000);
+  if (m < 1) return 'ahora';
+  if (m < 60) return 'en ' + m + ' min';
+  if (m < 2880) return 'en ' + Math.round(m / 60) + ' h';
+  return 'en ' + Math.round(m / 1440) + ' días';
+}
+const plata = n => n == null ? '—' : '$' + Math.round(n).toLocaleString('es-AR');
+
+// ================= corridas de GitHub Actions → empleados
+function empleadosDe(run) {
+  const f = (run.path || '').split('/').pop(), t = run.display_title || '';
+  if (f === 'jefa.yml') return ['jefa'];
+  if (f === 'arreglar.yml') { const m = t.match(/\((\w+)\)\s*$/); return m ? [m[1]] : []; }
+  if (f === 'turno.yml') return t.includes('ventas') ? ['ventas'] : t.includes('tecnico') ? ['tecnico'] : ['tecnico', 'ventas'];
+  return [];
+}
+function enVivo(id) {
+  const mias = corridas.filter(r => empleadosDe(r).includes(id));
+  return {
+    ahora: mias.find(r => r.status === 'in_progress' || r.status === 'queued'),
+    ultima: mias.find(r => r.status === 'completed' && r.conclusion !== 'skipped' && r.conclusion !== 'cancelled'),
+  };
+}
+let enviados = {};  // pedidos recién mandados que todavía no aparecen en GitHub: {id: hora}
+const arreglosDe = id => (datos && datos.arreglos || []).filter(a => a.empleado === id);
+const corridaArreglo = id => corridas.find(r => (r.path || '').endsWith('/arreglar.yml') && (r.status === 'in_progress' || r.status === 'queued') && (r.display_title || '').includes(`(${id})`));
+const arreglandose = id => corridaArreglo(id) || (enviados[id] && Date.now() - enviados[id] < 3 * 60000);
+function estadoReal(e) {
+  const {ahora, ultima} = enVivo(e.id);
+  if (ahora || arreglandose(e.id)) return 'trabajando';
+  if (ultima && ultima.conclusion === 'failure' && new Date(ultima.updated_at) > fecha(datos.actualizado)) return 'falla';
+  return e.estado;
+}
+const reunionPendiente = () => datos && datos.reunion && (datos.reunion.sin_responder || datos.reunion.ideas_sin_decidir);
+const pendientesDe = id => (datos.pendientes || []).filter(p => p.quien === id && p.id !== 'reunion' && p.id !== 'pausa');
+
+// ================= 3D: escena
+const lienzo = $('#mundo');
+const renderer = new THREE.WebGLRenderer({canvas: lienzo, antialias: true});
+const MOVIL = matchMedia('(max-width:760px)').matches;
+renderer.setPixelRatio(Math.min(devicePixelRatio, MOVIL ? 1.75 : 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.0;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+const escena = new THREE.Scene();
+escena.background = new THREE.Color('#E4E3DF');
+const pmrem = new THREE.PMREMGenerator(renderer);
+escena.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
+escena.add(new THREE.HemisphereLight(0xffffff, 0xBDB8AE, .6));
+const sol = new THREE.DirectionalLight(0xFFF8EE, 1.7);
+sol.position.set(9, 17, 8);
+sol.castShadow = true;
+sol.shadow.mapSize.set(MOVIL ? 1024 : 2048, MOVIL ? 1024 : 2048);
+Object.assign(sol.shadow.camera, {left: -17, right: 17, top: 14, bottom: -14, near: 1, far: 50});
+sol.shadow.bias = -0.0004; sol.shadow.normalBias = .03;
+escena.add(sol);
+
+const camara = new THREE.PerspectiveCamera(30, 1, .1, 300);
+const controles = new OrbitControls(camara, lienzo);
+controles.enableDamping = true; controles.dampingFactor = .08;
+controles.maxPolarAngle = 1.32; controles.minPolarAngle = .35;
+controles.minDistance = 4; controles.maxDistance = 80;
+controles.screenSpacePanning = false;
+
+const mats = new Map();
+const mate = (c, extra = {}) => {
+  const k = c + JSON.stringify(extra);
+  if (!mats.has(k)) mats.set(k, new THREE.MeshStandardMaterial({color: c, roughness: .7, metalness: 0, envMapIntensity: .55, ...extra}));
+  return mats.get(k);
+};
+function caja(w, h, d, color, x = 0, y = 0, z = 0, padre, sombra = true) {
+  const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), typeof color === 'string' ? mate(color) : color);
+  m.position.set(x, y, z); m.castShadow = sombra; m.receiveShadow = true;
+  if (padre) padre.add(m);
+  return m;
+}
+function cilindro(rt, rb, h, color, x = 0, y = 0, z = 0, padre, seg = 20) {
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(rt, rb, h, seg), typeof color === 'string' ? mate(color) : color);
+  m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+  if (padre) padre.add(m);
+  return m;
+}
+function texto(lineas, {ancho = 512, alto = 128, fondo = null, color = '#1A1A1A', fuente = 'Michroma', tam = 56, esp = 0} = {}) {
+  const c = document.createElement('canvas'); c.width = ancho; c.height = alto;
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  const dibujar = () => {
+    const g = c.getContext('2d'); g.clearRect(0, 0, ancho, alto);
+    if (fondo) { g.fillStyle = fondo; g.fillRect(0, 0, ancho, alto); }
+    g.fillStyle = color; g.textAlign = 'center'; g.textBaseline = 'middle';
+    if ('letterSpacing' in g) g.letterSpacing = esp + 'px';
+    const ls = [].concat(lineas);
+    ls.forEach((l, i) => { const [txt, f, tm] = Array.isArray(l) ? l : [l, fuente, tam]; g.font = `400 ${tm}px "${f}", sans-serif`; g.fillText(txt, ancho / 2, alto / 2 + (i - (ls.length - 1) / 2) * tm * 1.35); });
+    t.needsUpdate = true;
+  };
+  dibujar(); document.fonts && document.fonts.ready.then(dibujar);
+  return t;
+}
+
+// ---------- caras (textura en el cilindro de la cabeza)
+const caras = {};
+function cara(st, piel, parpadeo) {
+  const k = st + piel + (parpadeo ? '-p' : '');
+  if (caras[k]) return caras[k];
+  const c = document.createElement('canvas'); c.width = 512; c.height = 140;
+  const g = c.getContext('2d');
+  g.fillStyle = piel; g.fillRect(0, 0, 512, 140);
+  g.fillStyle = g.strokeStyle = '#2a2420'; g.lineCap = 'round';
+  const cx = 256, ey = 60;
+  const cerrados = parpadeo || st === 'descanso' || st === 'pausa';
+  for (const dx of [-26, 26]) {
+    if (cerrados) { g.lineWidth = 5; g.beginPath(); g.arc(cx + dx, ey - 3, 8, .15 * Math.PI, .85 * Math.PI); g.stroke(); }
+    else { g.beginPath(); g.ellipse(cx + dx, ey, 6, 8, 0, 0, 7); g.fill(); }
+  }
+  g.lineWidth = 4;
+  if (st === 'aviso') { g.beginPath(); g.moveTo(cx - 36, ey - 20); g.lineTo(cx - 16, ey - 18); g.moveTo(cx + 16, ey - 22); g.lineTo(cx + 36, ey - 18); g.stroke(); }
+  if (st === 'falla') { g.beginPath(); g.moveTo(cx - 36, ey - 15); g.lineTo(cx - 16, ey - 22); g.moveTo(cx + 16, ey - 22); g.lineTo(cx + 36, ey - 15); g.stroke(); }
+  g.lineWidth = 4.5; g.beginPath();
+  if (st === 'ok') g.arc(cx, 82, 16, .2 * Math.PI, .8 * Math.PI);
+  else if (st === 'trabajando') { g.moveTo(cx - 9, 94); g.lineTo(cx + 9, 94); }
+  else if (st === 'aviso') { g.moveTo(cx - 11, 98); g.quadraticCurveTo(cx, 93, cx + 11, 98); }
+  else if (st === 'falla') { g.ellipse(cx, 99, 7, 9, 0, 0, 7); g.fill(); }
+  else { g.moveTo(cx - 7, 96); g.lineTo(cx + 7, 96); }
+  g.stroke();
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4;
+  return caras[k] = new THREE.MeshStandardMaterial({map: t, roughness: .6, envMapIntensity: .5});
+}
+
+// ---------- pinta: [pelo, color de pelo, remera, pantalón, piel] (todos con básicos GROSO)
+const LOOK = {
+  jefa: ['rodete', '#2B2119', '#1A1A1A', '#3A3936', '#E3BC98'],
+  tecnico: ['corto', '#16120F', '#F1EFE9', '#1A1A1A', '#B98563'],
+  ventas: ['largo', '#5B4030', '#1A1A1A', '#8E8A80', '#8A5B3D'],
+};
+
+function pelo(tipo, color, cabeza) {
+  const m = mate(color, {roughness: .85});
+  const g = new THREE.Group(); cabeza.add(g);
+  const bola = (r, x, y, z) => { const b = new THREE.Mesh(new THREE.SphereGeometry(r, 16, 12), m); b.position.set(x, y, z); b.castShadow = true; g.add(b); return b; };
+  const casco = new THREE.Mesh(new THREE.SphereGeometry(.205, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), m);
+  casco.position.y = .13; casco.scale.y = .85; casco.castShadow = true; g.add(casco);
+  if (tipo === 'rodete') { bola(.1, 0, .27, -.12); caja(.4, .32, .1, color, 0, .02, -.15, g); }
+  if (tipo === 'corto') caja(.34, .05, .12, color, 0, .2, .12, g);
+  if (tipo === 'largo') { caja(.4, .46, .12, color, 0, -.06, -.14, g); caja(.07, .36, .26, color, -.18, .0, -.03, g); caja(.07, .36, .26, color, .18, .0, -.03, g); }
+}
+
+// figura de pie o sentada: las piernas giran en la cadera y la rodilla
+const CADERA = .92, SENTADO = -.32;
+function figura(id, look) {
+  const [tipoPelo, cPelo, cRemera, cPantalon, piel] = look;
+  const raiz = new THREE.Group();
+  const cuerpo = new THREE.Group(); raiz.add(cuerpo);
+  const piernas = [];
+  for (const sx of [-.12, .12]) {
+    const cadera = new THREE.Group(); cadera.position.set(sx, CADERA, 0); raiz.add(cadera);
+    caja(.21, .44, .23, cPantalon, 0, -.22, 0, cadera);
+    const rodilla = new THREE.Group(); rodilla.position.y = -.44; cadera.add(rodilla);
+    caja(.19, .44, .21, cPantalon, 0, -.22, 0, rodilla);
+    caja(.21, .08, .32, '#141414', 0, -.46, .05, rodilla);
+    piernas.push([cadera, rodilla]);
+  }
+  caja(.46, .14, .27, cPantalon, 0, CADERA + .03, 0, cuerpo);
+  const torso = new THREE.Mesh(new THREE.CylinderGeometry(.23, .26, .55, 4, 1), mate(cRemera));
+  torso.rotation.y = Math.PI / 4; torso.scale.set(1.05, 1, .56); torso.position.y = CADERA + .37; torso.castShadow = true; cuerpo.add(torso);
+  const brazos = [];
+  for (const sx of [-1, 1]) {
+    const hombro = new THREE.Group(); hombro.position.set(sx * .3, CADERA + .56, 0); cuerpo.add(hombro);
+    cilindro(.072, .08, .2, cRemera, 0, -.08, 0, hombro, 14);
+    cilindro(.062, .062, .26, piel, 0, -.3, 0, hombro, 14);
+    hombro.rotation.z = sx * .06;
+    brazos.push(hombro);
+  }
+  cilindro(.075, .075, .08, piel, 0, CADERA + .69, 0, cuerpo, 12);
+  const cabeza = new THREE.Group(); cabeza.position.y = CADERA + .9; cuerpo.add(cabeza);
+  const craneo = new THREE.Mesh(new THREE.CylinderGeometry(.18, .18, .32, 32, 1, false, -Math.PI, Math.PI * 2), [cara('ok', piel), mate(piel), mate(piel)]);
+  craneo.castShadow = true; cabeza.add(craneo);
+  const tapa = new THREE.Mesh(new THREE.SphereGeometry(.18, 24, 10, 0, Math.PI * 2, 0, Math.PI / 2), mate(piel)); tapa.position.y = .16; tapa.scale.y = .4; cabeza.add(tapa);
+  pelo(tipoPelo, cPelo, cabeza);
+  if (id === 'tecnico') { const a = new THREE.Mesh(new THREE.TorusGeometry(.2, .02, 8, 24, Math.PI), mate('#1A1A1A')); a.position.y = .08; cabeza.add(a); for (const sx of [-1, 1]) cilindro(.05, .05, .05, '#1A1A1A', sx * .2, .05, 0, cabeza, 14).rotation.z = Math.PI / 2; }
+  return {raiz, cuerpo, brazos, piernas, cabeza, craneo, piel};
+}
+
+function silla(padre, x, z, rotY = 0) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = rotY; padre.add(g);
+  caja(.54, .07, .52, '#2A2A28', 0, .46, 0, g);
+  caja(.54, .6, .06, '#2A2A28', 0, .8, -.27, g);
+  cilindro(.03, .03, .4, '#111', 0, .23, 0, g, 8);
+  for (let i = 0; i < 5; i++) { const p = caja(.3, .03, .04, '#111', 0, .03, 0, g, false); p.rotation.y = i / 5 * Math.PI * 2; p.translateX(.15); }
+  return g;
+}
+function escritorio(padre, ancho = 2) {
+  caja(ancho, .05, .9, '#C9A27A', 0, .8, 0, padre);  // roble
+  for (const sx of [-1, 1]) { caja(.04, .78, .04, '#111', sx * (ancho / 2 - .08), .39, .38, padre); caja(.04, .78, .04, '#111', sx * (ancho / 2 - .08), .39, -.38, padre); caja(.04, .04, .8, '#111', sx * (ancho / 2 - .08), .1, 0, padre, false); }
+}
+function monitor(padre, x, z, rotY = 0) {
+  const g = new THREE.Group(); g.position.set(x, .83, z); g.rotation.y = rotY; padre.add(g);
+  caja(.24, .02, .16, '#111', 0, .01, 0, g);
+  caja(.03, .26, .03, '#111', 0, .14, -.02, g);
+  caja(.82, .48, .03, '#111', 0, .48, 0, g);
+  const pantalla = new THREE.Mesh(new THREE.PlaneGeometry(.76, .42), new THREE.MeshBasicMaterial({color: '#2a2a2a'}));
+  pantalla.position.set(0, .48, -.017); pantalla.rotation.y = Math.PI; g.add(pantalla);
+  const luz = new THREE.Mesh(new THREE.CircleGeometry(.025, 16), new THREE.MeshBasicMaterial({color: '#5F8A6B'}));
+  luz.position.set(.36, .27, .017); g.add(luz);
+  return [pantalla, luz];
+}
+function olivo(padre, x, z, s = 1) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.scale.setScalar(s); padre.add(g);
+  cilindro(.32, .28, .55, '#B9B5AC', 0, .275, 0, g, 24);
+  cilindro(.03, .04, .9, '#4A3B2E', 0, 1, 0, g, 8);
+  for (let i = 0; i < 7; i++) { const h = new THREE.Mesh(new THREE.SphereGeometry(.2 + (i % 3) * .05, 10, 8), mate('#7D8B6A', {roughness: .9})); h.position.set(Math.sin(i * 2.1) * .25, 1.4 + (i % 3) * .14, Math.cos(i * 1.7) * .22); h.castShadow = true; g.add(h); }
+}
+// perchero con la colección: remeras negras y blancas
+function perchero(padre, x, z) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = -Math.PI / 2; padre.add(g);
+  for (const sx of [-1.3, 1.3]) { cilindro(.025, .025, 1.75, '#111', sx, .875, 0, g, 8); caja(.04, .03, .5, '#111', sx, .02, 0, g); }
+  cilindro(.02, .02, 2.64, '#111', 0, 1.74, 0, g, 8).rotation.z = Math.PI / 2;
+  for (let i = 0; i < 7; i++) {
+    const c = i % 2 ? '#F1EFE9' : '#1A1A1A', px = -1.0 + i * .33;
+    const r = new THREE.Group(); r.position.set(px, 1.66, i * .012); r.rotation.y = .5; g.add(r);  // de frente, apenas giradas
+    caja(.5, .62, .03, c, 0, -.36, 0, r);
+    for (const sx of [-1, 1]) { const m = caja(.18, .2, .03, c, sx * .3, -.12, 0, r); m.rotation.z = sx * .5; }
+    caja(.02, .1, .02, '#888', 0, .02, 0, r, false);
+  }
+}
+
+// ---------- lugares: dónde se sienta cada uno [x, z, mira hacia (rotY)]
+const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [1.6, -1.2], ventas: [5.6, -1.2]};
+const PROXIMOS = [[-2.4, -6.0], [1.6, -6.0], [5.6, -6.0], [9.6, -6.0], [9.6, -1.2]];
+const MESA = {x: -9.6, z: -5.6};
+const EN_MESA = {jefa: [MESA.x - 2.55, MESA.z, Math.PI / 2], tecnico: [MESA.x - .9, MESA.z - 1.05, 0], ventas: [MESA.x + .9, MESA.z - 1.05, 0]};
+const MATEO = {x: -9.4, z: 4.2};
+const CON_MATEO = {jefa: [MATEO.x - .7, MATEO.z + 1.15, Math.PI], tecnico: [MATEO.x + .1, MATEO.z + 1.15, Math.PI], ventas: [MATEO.x + .9, MATEO.z + 1.15, Math.PI]};
+const PASILLO = -3.5;          // pasillo entre las dos filas de escritorios
+const PUERTA = [-6.6, -2.9];   // puerta de la sala de reunión
+function lugarDe(id, donde) {
+  if (donde === 'mesa') return EN_MESA[id];
+  if (donde === 'mateo') return CON_MATEO[id];
+  const [x, z] = ESCRITORIO[id]; return [x, z - .78, 0];
+}
+// camino de un lugar a otro, siempre por el pasillo (nadie atraviesa escritorios ni vidrios)
+function salida(id, donde) {
+  const [x, z] = lugarDe(id, donde);
+  // los del lado de la pared rodean la mesa por la punta; la cabecera sale derecho hacia la puerta
+  if (donde === 'mesa') return (z < MESA.z ? [[x, z], [MESA.x + 2.9, z]] : [[x, z], [x, MESA.z + 1.6]]).concat([[MESA.x + 2.9, MESA.z + 1.6], PUERTA, [-5, PASILLO]]);
+  if (donde === 'mateo') return [[x, z], [x, z + .7], [-5, z + .7], [-5, PASILLO]];
+  return [[x, z], [x, PASILLO], [-5, PASILLO]];
+}
+function camino(id, de, a) {
+  const ida = salida(id, de), vuelta = salida(id, a).slice().reverse();
+  return ida.concat(vuelta).map(([x, z]) => new THREE.Vector3(x, 0, z));
+}
+
+// ---------- la oficina entera
+let mundo = null, gente = {}, tele = null;
+function construir(of) {
+  if (mundo) { escena.remove(mundo); mundo.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
+  mundo = new THREE.Group(); escena.add(mundo); gente = {};
+  const W = 13, D = 9;
+  // piso de cemento alisado y zócalo
+  caja(W * 2 + .4, .2, D * 2 + .4, '#CDCAC3', 0, -.1, 0, mundo, false).material = mate('#CDCAC3', {roughness: .55});
+  caja(7.2, .02, 7.2, '#D8D5CE', MESA.x, .01, MESA.z, mundo, false);   // piso de la sala de reunión
+  caja(5, .02, 3.6, '#BFB9AE', MATEO.x, .01, MATEO.z + .5, mundo, false); // alfombra de tu escritorio
+  // paredes tiza con zócalo grafito
+  caja(W * 2, 2.6, .3, '#F1EFE9', 0, 1.3, -D - .15, mundo);
+  caja(.3, 2.6, D * 2, '#F1EFE9', -W - .15, 1.3, 0, mundo);
+  caja(W * 2, .12, .04, '#1A1A1A', 0, .06, -D + .02, mundo, false);
+  caja(.04, .12, D * 2, '#1A1A1A', -W + .02, .06, 0, mundo, false);
+  // ventanales con marco negro
+  for (const x of [1.6, 7.4]) { caja(4.2, 1.9, .03, mate('#9FA9AB', {roughness: .15, envMapIntensity: .8}), x, 1.35, -D + .02, mundo, false); for (const dx of [-2.1, 0, 2.1]) caja(.05, 1.9, .06, '#111', x + dx, 1.35, -D + .04, mundo, false); caja(4.25, .05, .06, '#111', x, .4, -D + .04, mundo, false); caja(4.25, .05, .06, '#111', x, 2.3, -D + .04, mundo, false); }
+  // GROSO en la pared (Michroma) y BASIC. NOT YOU. abajo
+  const logo = new THREE.Mesh(new THREE.PlaneGeometry(5.2, 1.3), new THREE.MeshBasicMaterial({map: texto('GROSO', {ancho: 1024, alto: 256, tam: 150, esp: 30}), transparent: true}));
+  logo.position.set(-W + .02, 1.75, 3.2); logo.rotation.y = Math.PI / 2; mundo.add(logo);
+  const lema = new THREE.Mesh(new THREE.PlaneGeometry(2.6, .2), new THREE.MeshBasicMaterial({map: texto([['BASIC. NOT YOU.', 'Geist Mono', 40]], {ancho: 1024, alto: 80, esp: 12, color: '#5A5A55'}), transparent: true}));
+  lema.position.set(-W + .02, .92, 3.2); lema.rotation.y = Math.PI / 2; mundo.add(lema);
+  // la tele con los números (pared del fondo, entre los ventanales)
+  const tv = document.createElement('canvas'); tv.width = 640; tv.height = 360;
+  const tt = new THREE.CanvasTexture(tv); tt.colorSpace = THREE.SRGBColorSpace;
+  caja(2.5, 1.45, .06, '#111', -3.4, 1.5, -D + .05, mundo);
+  const pt = new THREE.Mesh(new THREE.PlaneGeometry(2.38, 1.34), new THREE.MeshBasicMaterial({map: tt}));
+  pt.position.set(-3.4, 1.5, -D + .09); mundo.add(pt);
+  tele = {canvas: tv, tex: tt};
+  // sala de reunión de vidrio con mesa larga
+  const vidrio = new THREE.MeshStandardMaterial({color: '#E6ECEC', transparent: true, opacity: .22, roughness: .05, depthWrite: false});
+  caja(.04, 2.3, 4.6, vidrio, -6, 1.15, -6.7, mundo, false);     // lateral (la puerta queda entre z -4.4 y -2)
+  caja(7, 2.3, .04, vidrio, -9.5, 1.15, -2, mundo, false);
+  for (const [x, z] of [[-6, -9], [-6, -4.4], [-6, -2], [-13, -2]]) caja(.05, 2.3, .05, '#111', x, 1.15, z, mundo);
+  caja(.05, .05, 4.6, '#111', -6, 2.3, -6.7, mundo, false); caja(7, .05, .05, '#111', -9.5, 2.3, -2, mundo, false);
+  caja(4.4, .06, 1.4, '#C9A27A', MESA.x, .78, MESA.z, mundo);
+  for (const sx of [-1.9, 1.9]) caja(.06, .76, 1.1, '#111', MESA.x + sx, .38, MESA.z, mundo);
+  for (const x of [-.9, .9]) { silla(mundo, MESA.x + x, MESA.z - 1.05, 0); silla(mundo, MESA.x + x, MESA.z + 1.05, Math.PI); }
+  silla(mundo, MESA.x - 2.55, MESA.z, Math.PI / 2); silla(mundo, MESA.x + 2.55, MESA.z, -Math.PI / 2);
+  const cartelSala = new THREE.Mesh(new THREE.PlaneGeometry(1.6, .22), new THREE.MeshBasicMaterial({map: texto([['SALA DE REUNIÓN', 'Geist Mono', 34]], {ancho: 512, alto: 70, esp: 6, color: '#5A5A55'}), transparent: true}));
+  cartelSala.position.set(-9.5, 2.05, -1.97); mundo.add(cartelSala);
+  // tu escritorio (Mateo): donde vienen los que te necesitan
+  const tuyo = new THREE.Group(); tuyo.position.set(MATEO.x, 0, MATEO.z); tuyo.rotation.y = Math.PI; mundo.add(tuyo);
+  escritorio(tuyo, 2.4); monitor(tuyo, 0, .15); silla(tuyo, 0, -.75);
+  caja(.3, .02, .22, '#F1EFE9', .7, .835, .1, tuyo);
+  for (const [x, z] of Object.values(CON_MATEO)) silla(mundo, x, z, Math.PI);
+  const cartelMateo = new THREE.Mesh(new THREE.PlaneGeometry(.9, .26), new THREE.MeshBasicMaterial({map: texto([['MATEO', 'Michroma', 48]], {ancho: 360, alto: 100, esp: 8, fondo: '#1A1A1A', color: '#F1EFE9'})}));
+  cartelMateo.position.set(MATEO.x, .97, MATEO.z - .02); cartelMateo.rotation.y = Math.PI; mundo.add(cartelMateo);
+  const reverso = cartelMateo.clone(); reverso.rotation.y = 0; reverso.position.z = MATEO.z + .44; reverso.position.y = .66; mundo.add(reverso);
+  // perchero, olivos y estante
+  perchero(mundo, 11.6, 4.2);
+  olivo(mundo, -12.2, -1.3, .9); olivo(mundo, 12.2, -8.2); olivo(mundo, -5.4, 7.8, .8); olivo(mundo, 12.2, 8.1, .9);
+  caja(.5, 1.8, 2.4, '#1A1A1A', 12.6, .9, -3.6, mundo); for (const y of [.5, 1, 1.5]) caja(.46, .02, 2.36, '#2C2C2A', 12.35, y, -3.6, mundo, false);
+  for (let i = 0; i < 6; i++) caja(.3, .08, .34, i % 2 ? '#1A1A1A' : '#F1EFE9', 12.3, 1.06 + Math.floor(i / 3) * .5, -4.4 + (i % 3) * .8, mundo);
+
+  // escritorios vacíos de las próximas fases, con su cartel
+  (of.proximos || []).forEach((p, i) => {
+    const [x, z] = PROXIMOS[i] || [0, 0];
+    const g = new THREE.Group(); g.position.set(x, 0, z); mundo.add(g);
+    escritorio(g); monitor(g, -.45, .12, -.25); silla(g, 0, -.78);
+    const cartel = new THREE.Mesh(new THREE.PlaneGeometry(.95, .4), new THREE.MeshBasicMaterial({map: texto([[`FASE ${p.fase}`, 'Geist Mono', 34], [p.puesto.toUpperCase(), 'Geist', 30]], {ancho: 512, alto: 216, fondo: '#F1EFE9', color: '#5A5A55', esp: 3})}));
+    cartel.position.set(.45, 1.04, .2); cartel.rotation.x = -.25; g.add(cartel);
+    caja(.97, .42, .015, '#1A1A1A', .45, 1.04, .19, g).rotation.x = -.25;
+  });
+
+  // escritorios y gente
+  for (const e of of.empleados) {
+    const [x, z] = ESCRITORIO[e.id] || [0, 0];
+    const puesto = new THREE.Group(); puesto.position.set(x, 0, z); mundo.add(puesto);
+    escritorio(puesto, e.id === 'jefa' ? 2.3 : 2);
+    caja(.62, .02, .2, '#E9E7E1', 0, .835, -.16, puesto);
+    const pantallas = [monitor(puesto, -.45, .12, -.25)];
+    if (e.id === 'tecnico') pantallas.push(monitor(puesto, .5, .12, .25));
+    if (e.id === 'ventas') { for (let i = 0; i < 3; i++) caja(.34, .1, .26, '#CDB89A', .62, .88 + i * .1, .1, puesto); }
+    if (e.id === 'jefa') { cilindro(.05, .04, .1, '#F1EFE9', .6, .88, .05, puesto, 14); caja(.3, .02, .4, '#1A1A1A', .25, .84, .15, puesto).rotation.y = .3; }
+    silla(puesto, 0, -.78);
+    const f = figura(e.id, LOOK[e.id] || LOOK.jefa);
+    mundo.add(f.raiz);
+    const anillo = new THREE.Mesh(new THREE.RingGeometry(1.05, 1.25, 48), new THREE.MeshBasicMaterial({color: '#B5462F', transparent: true, opacity: 0, depthWrite: false}));
+    anillo.rotation.x = -Math.PI / 2; anillo.position.set(0, .03, -.3); puesto.add(anillo);
+    puesto.traverse(o => { o.userData.id = e.id; });
+    f.raiz.traverse(o => { o.userData.id = e.id; });
+    gente[e.id] = {...f, puesto, pantallas, anillo, fase: Math.random() * 10, proximoParpadeo: 2 + Math.random() * 4, parpadeo: 0, st: null,
+      donde: null, ruta: null, pose: 'sentado'};
+    ubicar(e.id, 'escritorio', true);
+  }
+  $('#etiquetas').innerHTML = of.empleados.map(e => `<div class="chip" data-id="${e.id}"><span class="globo"></span><span class="nombre">${esc(e.nombre)}</span></div>`).join('');
+  vistaGeneral(true);
+}
+
+// mandar a alguien a otro lugar: camina por el pasillo y se sienta
+function ubicar(id, donde, ya) {
+  const p = gente[id]; if (!p || p.donde === donde) return;
+  if (ya || !p.donde) {
+    const [x, z, r] = lugarDe(id, donde);
+    p.raiz.position.set(x, SENTADO, z); p.raiz.rotation.y = r; p.donde = donde; p.pose = 'sentado'; p.ruta = null;
+    return;
+  }
+  p.ruta = {puntos: camino(id, p.donde, donde), i: 1, destino: donde};
+  p.pose = 'caminando'; p.raiz.position.y = 0;
+  p.donde = donde;
+}
+
+function pintarTele(of) {
+  if (!tele) return;
+  const g = tele.canvas.getContext('2d'), n = of.numeros || {}, u = of.uso || {};
+  g.fillStyle = '#141414'; g.fillRect(0, 0, 640, 360);
+  g.fillStyle = '#8B8A85'; g.font = '500 17px "Geist Mono", monospace';
+  if ('letterSpacing' in g) g.letterSpacing = '3px';
+  g.fillText('GROSO · ESTA SEMANA', 34, 50);
+  const dias = n.lanzamiento ? Math.ceil((new Date(n.lanzamiento + 'T00:00:00-03:00') - Date.now()) / 86400000) : null;
+  const celdas = [['PEDIDOS', n.pedidos_semana ?? '—'], ['VENTAS', n.ventas_semana != null ? plata(n.ventas_semana) : '—'], ['SOCIOS', n.socios ?? '—'],
+    [dias != null && dias >= 0 ? 'LANZAMIENTO' : 'VELOCIDAD', dias != null && dias >= 0 ? dias + ' días' : (n.velocidad ?? '—') + '/100']];
+  celdas.forEach(([k, v], i) => {
+    const x = 34 + (i % 2) * 300, y = 105 + Math.floor(i / 2) * 110;
+    g.fillStyle = '#8B8A85'; g.font = '500 15px "Geist Mono", monospace'; g.fillText(k, x, y);
+    g.fillStyle = '#F1EFE9'; g.font = '400 40px "Michroma", sans-serif'; if ('letterSpacing' in g) g.letterSpacing = '1px'; g.fillText(String(v), x, y + 52); if ('letterSpacing' in g) g.letterSpacing = '3px';
+  });
+  g.fillStyle = '#5A5A55'; g.font = '500 14px "Geist Mono", monospace';
+  g.fillText(`CLAUDE 7 DÍAS: ${u.turnos || 0} TURNOS · ${String(u.minutos || 0).replace('.', ',')} MIN`, 34, 334);
+  tele.tex.needsUpdate = true;
+}
+
+function aplicarEstados(of) {
+  const reu = reunionPendiente();
+  for (const e of of.empleados) {
+    const p = gente[e.id]; if (!p) continue;
+    const st = estadoReal(e);
+    p.st = st;
+    p.craneo.material[0] = cara(st, p.piel);
+    for (const [pantalla, luz] of p.pantallas) {
+      pantalla.material.color.set(st === 'descanso' || st === 'pausa' ? '#2a2a2a' : '#DCE3E4');
+      luz.material.color.set(COLOR[st]);
+    }
+    // dónde está: en la mesa si la reunión espera tus respuestas, en tu escritorio si te necesita, si no en el suyo
+    const meNecesita = pendientesDe(e.id).length > 0 && st !== 'trabajando';
+    ubicar(e.id, of.pausa ? 'escritorio' : reu ? 'mesa' : meNecesita ? 'mateo' : 'escritorio');
+    const globo = document.querySelector(`.chip[data-id="${e.id}"] .globo`);
+    if (!globo) continue;
+    globo.className = 'globo' + ({aviso: ' ojo', falla: ' falla', ok: ' ok', descanso: ' zz', pausa: ' zz'}[st] || '');
+    globo.innerHTML = st === 'trabajando' ? '<i class="d"></i><i class="d"></i><i class="d"></i>' : {falla: '!', aviso: '!', ok: '✓', pausa: '❙❙'}[st] || 'z';
+  }
+}
+
+// ---------- cámara
+let viaje = null;
+const casa = () => {
+  const a = innerWidth / innerHeight;
+  const d = a > 1.25 ? 35 : a > .8 ? 44 : 56;
+  return {pos: new THREE.Vector3(.62, .7, .8).normalize().multiplyScalar(d).add(new THREE.Vector3(0, 0, 1)), mira: a > .8 ? new THREE.Vector3(0, 0, .5) : new THREE.Vector3(-.5, 0, -1.2)};
+};
+function volar(pos, mira, rapido) {
+  if (rapido) { camara.position.copy(pos); controles.target.copy(mira); controles.update(); viaje = null; return; }
+  viaje = {t0: performance.now(), p0: camara.position.clone(), m0: controles.target.clone(), p1: pos, m1: mira};
+}
+function vistaGeneral(rapido) { const c = casa(); volar(c.pos, c.mira, rapido); }
+function enfocar(id) {
+  const p = gente[id]; if (!p) return;
+  const [lx, lz] = lugarDe(id, p.donde || 'escritorio');  // adonde va (si está caminando, adonde llega)
+  const base = new THREE.Vector3(lx, 0, lz);
+  const mira = base.clone().add(new THREE.Vector3(0, 1.1, .3));
+  const a = innerWidth / innerHeight;
+  volar(mira.clone().add(new THREE.Vector3(.55, .6, 1).normalize().multiplyScalar(a < .8 ? 9 : 7)), mira);
+}
+function enfocarPunto(x, z, dist = 12) {
+  const mira = new THREE.Vector3(x, .8, z);
+  volar(mira.clone().add(new THREE.Vector3(.55, .7, 1).normalize().multiplyScalar(innerWidth / innerHeight < .8 ? dist * 1.4 : dist)), mira);
+}
+
+// ---------- animación
+const reloj = new THREE.Clock();
+const v = new THREE.Vector3();
+const VEL = 1.7;
+function cuadro() {
+  requestAnimationFrame(cuadro);
+  const dt = Math.min(reloj.getDelta(), .05), t = reloj.elapsedTime;
+  if (viaje) {
+    const u = Math.min(1, (performance.now() - viaje.t0) / 900), k = 1 - Math.pow(1 - u, 3);
+    camara.position.lerpVectors(viaje.p0, viaje.p1, k); controles.target.lerpVectors(viaje.m0, viaje.m1, k);
+    if (u >= 1) viaje = null;
+  }
+  correrVista(dt);
+  controles.update();
+  for (const id in gente) {
+    const p = gente[id], st = p.st, f = t + p.fase;
+    const [bi, bd] = p.brazos, [[ci, ri], [cd, rd]] = p.piernas;
+    p.cuerpo.position.x = 0; p.cuerpo.rotation.x = 0; p.cabeza.rotation.set(0, 0, 0);
+    if (p.pose === 'caminando' && p.ruta) {
+      const obj = p.ruta.puntos[p.ruta.i], pos = p.raiz.position;
+      const dx = obj.x - pos.x, dz = obj.z - pos.z, dist = Math.hypot(dx, dz);
+      if (dist < .05) {
+        p.ruta.i++;
+        if (p.ruta.i >= p.ruta.puntos.length) { const [x, z, r] = lugarDe(id, p.ruta.destino); pos.set(x, SENTADO, z); p.raiz.rotation.y = r; p.pose = 'sentado'; p.ruta = null; }
+      } else {
+        const paso = Math.min(dist, VEL * dt);
+        pos.x += dx / dist * paso; pos.z += dz / dist * paso;
+        let r = Math.atan2(dx, dz) - p.raiz.rotation.y; r = Math.atan2(Math.sin(r), Math.cos(r));
+        p.raiz.rotation.y += r * Math.min(1, dt * 10);
+        const s = Math.sin(f * 9);
+        ci.rotation.x = s * .5; cd.rotation.x = -s * .5; ri.rotation.x = Math.max(0, -s) * .7; rd.rotation.x = Math.max(0, s) * .7;
+        bi.rotation.x = -s * .45; bd.rotation.x = s * .45; pos.y = Math.abs(Math.cos(f * 9)) * .04;
+      }
+      continue;
+    }
+    // sentado: muslos hacia adelante, pantorrillas al piso
+    ci.rotation.x = cd.rotation.x = -Math.PI / 2; ri.rotation.x = rd.rotation.x = Math.PI / 2;
+    if (st === 'trabajando') {
+      bi.rotation.x = -1.2 + Math.sin(f * 18) * .1; bd.rotation.x = -1.2 + Math.sin(f * 18 + 1.6) * .1;
+      p.cabeza.rotation.x = .1 + Math.sin(f * 2) * .03; p.cabeza.rotation.y = -.2;
+    } else if (st === 'falla') {
+      bi.rotation.x = -2.9 + Math.sin(f * 9) * .2; bd.rotation.x = -2.9 + Math.sin(f * 9 + 2) * .2;
+      p.cuerpo.position.x = Math.sin(f * 30) * .012; p.cabeza.rotation.z = Math.sin(f * 4) * .1;
+    } else if (st === 'aviso') {
+      bi.rotation.x = -1.1; bd.rotation.x = -2.6 + Math.sin(f * 6) * .06;
+      p.cabeza.rotation.z = .14; p.cabeza.rotation.y = Math.sin(f * .7) * .3;
+    } else if (st === 'descanso' || st === 'pausa') {
+      bi.rotation.x = -.2; bd.rotation.x = -.2;
+      p.cuerpo.rotation.x = -.16 + Math.sin(f * 1.2) * .02; p.cabeza.rotation.x = .3;
+    } else {
+      bi.rotation.x = -1.1; bd.rotation.x = -1.1 + Math.sin(f * .9) * .05;
+      p.cabeza.rotation.y = Math.sin(f * .45) * .4; p.cabeza.rotation.x = Math.sin(f * .3) * .05;
+    }
+    p.anillo.material.opacity = st === 'falla' && p.donde === 'escritorio' ? .2 + .3 * (.5 + .5 * Math.sin(t * 5)) : 0;
+    p.proximoParpadeo -= dt;
+    if (p.proximoParpadeo <= 0 && st !== 'descanso' && st !== 'pausa') { p.parpadeo = .12; p.proximoParpadeo = 2.5 + Math.random() * 4; p.craneo.material[0] = cara(st, p.piel, true); }
+    if (p.parpadeo > 0) { p.parpadeo -= dt; if (p.parpadeo <= 0) p.craneo.material[0] = cara(st, p.piel); }
+  }
+  renderer.render(escena, camara);
+  for (const el of document.querySelectorAll('.chip')) {
+    const p = gente[el.dataset.id]; if (!p) continue;
+    p.cabeza.getWorldPosition(v); v.y += .45; v.project(camara);
+    const fuera = v.z > 1 || Math.abs(v.x) > 1.1 || Math.abs(v.y) > 1.1;
+    el.style.display = fuera ? 'none' : '';
+    if (!fuera) el.style.transform = `translate(${(v.x + 1) / 2 * innerWidth}px,${(1 - v.y) / 2 * innerHeight}px) translate(-50%,-100%)`;
+    el.classList.toggle('sel', el.dataset.id === abierto);
+  }
+}
+
+// corrimiento: la oficina se corre para no quedar tapada por el resumen (izquierda) o el panel abierto
+const corrido = {x: 0, y: 0};
+function correrVista(dt) {
+  const ancho = innerWidth > 760, panel = $('#panel').classList.contains('abierto');
+  const x = ancho ? (panel ? 240 : -150) : 0, y = !ancho && panel ? innerHeight * .32 : 0;
+  const k = dt === undefined ? 1 : Math.min(1, dt * 6);
+  corrido.x += (x - corrido.x) * k; corrido.y += (y - corrido.y) * k;
+  camara.setViewOffset(innerWidth, innerHeight, corrido.x, corrido.y, innerWidth, innerHeight);
+  camara.updateProjectionMatrix();
+}
+function medir() {
+  renderer.setSize(innerWidth, innerHeight, false);
+  camara.aspect = innerWidth / innerHeight;
+  correrVista();
+}
+addEventListener('resize', () => { medir(); if (!abierto) vistaGeneral(true); });
+
+const rayo = new THREE.Raycaster(), puntero = new THREE.Vector2();
+let apretado = null;
+lienzo.addEventListener('pointerdown', ev => { apretado = [ev.clientX, ev.clientY]; });
+lienzo.addEventListener('pointerup', ev => {
+  if (!apretado || Math.hypot(ev.clientX - apretado[0], ev.clientY - apretado[1]) > 6) return;
+  const id = quienEsta(ev);
+  if (id) abrir(id); else if (abierto || vista) cerrar();
+});
+lienzo.addEventListener('pointermove', ev => { if (ev.pointerType === 'mouse' && !ev.buttons) lienzo.style.cursor = quienEsta(ev) ? 'pointer' : 'grab'; });
+function quienEsta(ev) {
+  if (!mundo) return null;
+  puntero.set(ev.clientX / innerWidth * 2 - 1, -(ev.clientY / innerHeight) * 2 + 1);
+  rayo.setFromCamera(puntero, camara);
+  const h = rayo.intersectObjects(mundo.children, true).find(x => x.object.userData.id);
+  return h ? h.object.userData.id : null;
+}
+
+// ================= pantalla (HUD)
+let construida = false;
+function pintar() {
+  const hay = datos && datos.empleados && datos.empleados.length;
+  $('#b-pausa').disabled = !token;
+  $('#b-pausa').innerHTML = pausado ? '▶<span class="t"> Reanudar</span>' : '❙❙<span class="t"> Pausar todo</span>';
+  $('#b-token').textContent = token ? 'Clave' : 'Conectar';
+  if (!hay) { $('#sub').textContent = token ? 'cargando…' : 'falta conectar con GitHub'; $('#cargando').textContent = token ? 'CARGANDO' : 'CONECTÁ LA OFICINA'; if (!token) $('#conectar').style.display = 'block'; return; }
+  $('#cargando').classList.add('oculto');
+  const of = datos;
+  $('#sub').textContent = `estado de ${hace(fecha(of.actualizado))} · ${fuente}`;
+  if (!construida) { construir(of); construida = true; }
+  aplicarEstados(of);
+  pintarTele(of);
+  const total = (of.pendientes || []).length;
+  $('#paravos').style.display = total ? 'inline-flex' : 'none';
+  $('#paravos').querySelector('b').textContent = total;
+  $('#paravos').querySelector('span').textContent = total === 1 ? 'Te toca 1 cosa' : `Te tocan ${total} cosas`;
+  const n = of.numeros || {}, u = of.uso || {};
+  const dias = n.lanzamiento ? Math.ceil((new Date(n.lanzamiento + 'T00:00:00-03:00') - Date.now()) / 86400000) : null;
+  $('#resumen').innerHTML = `<h2>Esta semana</h2>
+    <div class="num"><div><small>Pedidos</small><b>${n.pedidos_semana ?? '—'}</b></div><div><small>Ventas</small><b>${n.ventas_semana != null ? plata(n.ventas_semana) : '—'}</b></div>
+    <div><small>Socios</small><b>${n.socios ?? '—'}</b></div><div><small>${dias != null && dias >= 0 ? 'Lanzamiento' : 'Velocidad'}</small><b>${dias != null && dias >= 0 ? dias + ' d' : (n.velocidad ?? '—')}</b></div></div>
+    <h2>El equipo</h2>${of.empleados.map(e => { const st = estadoReal(e); return `<div class="fila"><i style="background:${COLOR[st]}"></i><div><b style="font-weight:500">${esc(e.nombre)}</b> · ${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'trabajando ahora' : e.resumen)}</div></div>`; }).join('')}
+    <div class="nota" style="margin-top:12px">Claude, últimos 7 días: ${u.turnos || 0} turnos · ${String(u.minutos || 0).replace('.', ',')} min (Sonnet)</div>`;
+  const reu = of.reunion;
+  $('#dock').innerHTML = of.empleados.map(e => {
+    const st = estadoReal(e);
+    return `<button class="av${abierto === e.id ? ' sel' : ''}" data-id="${e.id}" title="${esc(e.nombre + ' · ' + PALABRA[st])}"><span class="cara">${INICIAL[e.id] || e.nombre[0]}<span class="pt" style="background:${COLOR[st]}"></span></span><small>${esc(e.nombre.split(' ')[0])}</small></button>`;
+  }).join('') + `<span class="sep"></span>
+    <button class="av txt${vista === 'reunion' ? ' sel' : ''}" data-vista="reunion"><span class="cara">R${reunionPendiente() ? `<b>${(reu.sin_responder || 0) + (reu.ideas_sin_decidir || 0)}</b>` : ''}</span><small>Reunión</small></button>
+    <button class="av txt${vista === 'paravos' ? ' sel' : ''}" data-vista="paravos"><span class="cara">!${total ? `<b>${total}</b>` : ''}</span><small>Para vos</small></button>`;
+  if (abierto) abrir(abierto, true);
+  else if (vista) abrirVista(vista, true);
+  else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
+}
+
+function abrirPanel(html, refresco) {
+  const scroll = $('#panel').scrollTop;
+  const borradores = {}; document.querySelectorAll('#panel textarea[id], #panel input[id]').forEach(x => { borradores[x.id] = x.value; });
+  $('#panel').innerHTML = `<button class="btn cerrar" id="b-cerrar" aria-label="Cerrar">✕</button>` + html;
+  $('#panel').classList.add('abierto'); document.body.classList.add('con-panel');
+  if (innerWidth <= 760) $('#velo').classList.add('abierto');
+  $('#b-cerrar').onclick = cerrar;
+  if (refresco) { $('#panel').scrollTop = scroll; for (const k in borradores) { const x = document.getElementById(k); if (x) x.value = borradores[k]; } }
+}
+
+// ---------- Para vos y la reunión
+function abrirVista(cual, refresco) {
+  const of = datos; if (!of) return;
+  abierto = null; vista = cual;
+  document.querySelectorAll('.av').forEach(b => b.classList.toggle('sel', b.dataset.vista === cual));
+  if (cual === 'paravos') {
+    if (!refresco) enfocarPunto(MATEO.x, MATEO.z + .5, 11);
+    const pend = of.pendientes || [];
+    const solos = (of.arreglos || []).filter(a => a.estado === 'aplicado' && Date.now() - fecha(a.actualizado) < 3 * 86400000);
+    abrirPanel(`<h2>Para vos</h2><p class="nota">Solo lo que el equipo no puede hacer sin vos. Todo lo demás lo resuelven solos.</p>
+      <h3>Te toca</h3>${pend.map(p => {
+        const e = of.empleados.find(x => x.id === p.quien) || {};
+        const botones = p.hecho_boton ? `<div class="acciones"><button class="btn primario" data-hecho="${esc(p.id)}" data-como="mandado" ${token ? '' : 'disabled'}>Ya lo mandé</button><button class="btn" data-hecho="${esc(p.id)}" data-como="no corresponde" ${token ? '' : 'disabled'}>No corresponde</button></div>`
+          : p.abre === 'reunion' ? `<div class="acciones"><button class="btn primario" data-vista="reunion">Abrir la reunión</button></div>`
+          : p.arreglo ? `<div class="acciones"><button class="btn primario" data-arreglo="${esc(p.arreglo)}" data-accion="visto" data-emp="${esc(p.quien)}" ${token ? '' : 'disabled'}>Ya lo hice</button></div>` : '';
+        return `<div class="item"><div class="meta" style="margin:0 0 4px"><a class="link" href="#${esc(p.quien)}" data-id="${esc(p.quien)}">${esc(e.nombre || p.quien)}</a></div>${esc(p.texto)}${botones}</div>`;
+      }).join('') || '<p>Nada: todo en orden.</p>'}
+      ${solos.length ? `<h3>Lo que arreglaron solos (3 días)</h3><ul>${solos.map(a => `<li><b>${esc((of.empleados.find(x => x.id === a.empleado) || {}).nombre || a.empleado)}</b>: ${esc(a.titulo)}</li>`).join('')}</ul>` : ''}
+      ${(of.hechos_recientes || []).length ? `<h3>Lo último que marcaste</h3><ul>${of.hechos_recientes.map(([id, h]) => `<li>${esc(id)}: ${esc(h.como || 'hecho')} · ${esc(hace(fecha(h.cuando)))}</li>`).join('')}</ul>` : ''}`, refresco);
+    return;
+  }
+  // la reunión semanal
+  if (!refresco) enfocarPunto(MESA.x, MESA.z, 11);
+  const r = of.reunion;
+  if (!r) {
+    const jefa = of.empleados.find(e => e.id === 'jefa');
+    abrirPanel(`<h2>Reunión semanal</h2><p class="res">Todavía no hubo ninguna. La Jefa arma la primera ${esc(jefa ? en(fecha(jefa.proximo)) : 'pronto')}.</p>
+      ${temaHTML()}<div class="acciones"><button class="btn" id="b-reunion-ya" ${token ? '' : 'disabled'}>Armar la reunión ahora</button></div><div class="nota">Usa Claude (Sonnet): unos minutos de tu cuota.</div>`, refresco);
+    conectarTema(); if ($('#b-reunion-ya')) $('#b-reunion-ya').onclick = reunionYa;
+    return;
+  }
+  const resp = Object.assign({}, r.respuestas || {}, borrador.respuestas), dec = Object.assign({}, r.decisiones || {}, borrador.decisiones);
+  const N = id => ((of.empleados.find(e => e.id === id) || {}).nombre || id);
+  abrirPanel(`<h2>Reunión del ${esc(r.fecha.slice(8, 10))}/${esc(r.fecha.slice(5, 7))}</h2>
+    <p class="res">${esc(r.resumen)}</p>
+    ${(r.preguntas || []).length ? `<h3>Preguntas para vos</h3>${r.preguntas.map(p => `<div class="item"><div class="meta" style="margin:0 0 4px">${esc(N(p.quien))}</div><b>${esc(p.texto)}</b>
+      ${p.por_que ? `<div class="meta">${esc(p.por_que)}</div>` : ''}
+      ${(p.opciones || []).length ? `<div class="opciones">${p.opciones.map(o => `<button data-preg="${esc(p.id)}" data-op="${esc(o)}" class="${resp[p.id] === o ? 'si' : ''}">${esc(o)}</button>`).join('')}</div>` : ''}
+      <textarea id="r-${esc(p.id)}" data-resp="${esc(p.id)}" placeholder="Tu respuesta" style="min-height:52px;margin-top:6px">${esc((p.opciones || []).includes(resp[p.id]) ? '' : resp[p.id] || '')}</textarea></div>`).join('')}` : ''}
+    ${(r.ideas || []).length ? `<h3>Ideas (filtradas por la Jefa)</h3>${r.ideas.map(i => { const d = dec[i.id]; const dd = typeof d === 'string' ? d : d && d.decision;
+      return `<div class="item"><b>${esc(i.titulo)}</b><div class="meta"><span>De: ${esc(N(i.quien))} · Fuente: ${/^https?:/.test(i.fuente || '') ? `<a class="link" href="${esc(i.fuente)}" target="_blank" rel="noopener">${esc(i.fuente.replace(/^https?:\/\/(www\.)?/, '').slice(0, 48))}</a>` : esc(i.fuente)}</span>
+        <span>Costo: ${esc(i.costo)}</span><span>Qué esperamos: ${esc(i.esperado)}</span><span>Cómo se mide: ${esc(i.medida)}</span></div>
+        <div class="opciones">${['Aprobada', 'Más adelante', 'Descartada'].map(o => `<button data-idea="${esc(i.id)}" data-op="${o}" class="${dd === o ? 'si' : ''}">${o}</button>`).join('')}</div></div>`; }).join('')}` : ''}
+    <div class="acciones"><button class="btn primario" id="b-respuestas" ${token ? '' : 'disabled'}>Guardar respuestas</button><span class="nota" style="margin:0">El equipo las lee en su próximo turno.</span></div>
+    ${(r.temas_de_mateo || []).length ? `<h3>Tus temas</h3>${r.temas_de_mateo.map(t => `<div class="item"><b>${esc(t.tema)}</b><div class="meta">${esc(t.respuesta)}</div></div>`).join('')}` : ''}
+    <h3>Qué hizo cada uno</h3>${(r.equipo || []).map(x => `<div class="item"><b>${esc(N(x.empleado))}</b><div class="meta"><span>${esc(x.hizo)}</span><span>Sigue: ${esc(x.sigue)}</span></div></div>`).join('')}
+    ${(r.descartadas || []).length ? `<h3>Ideas que la Jefa descartó</h3><ul>${r.descartadas.map(d => `<li>${esc(d.titulo)}: <span class="nota">${esc(d.motivo)}</span></li>`).join('')}</ul>` : ''}
+    ${temaHTML()}
+    <p class="nota">${r.uso ? `Esta reunión usó ${esc(String(r.uso.minutos).replace('.', ','))} min de Claude (Sonnet).` : ''}</p>`, refresco);
+  document.querySelectorAll('[data-preg]').forEach(b => { b.onclick = () => { borrador.respuestas[b.dataset.preg] = b.dataset.op; const t = $('#r-' + b.dataset.preg); if (t) t.value = ''; abrirVista('reunion', true); }; });
+  document.querySelectorAll('[data-idea]').forEach(b => { b.onclick = () => { borrador.decisiones[b.dataset.idea] = b.dataset.op; abrirVista('reunion', true); }; });
+  document.querySelectorAll('[data-resp]').forEach(t => { t.oninput = () => { if (t.value.trim()) borrador.respuestas[t.dataset.resp] = t.value; }; });
+  $('#b-respuestas').onclick = guardarRespuestas;
+  conectarTema();
+}
+const borrador = {respuestas: {}, decisiones: {}};
+const temaHTML = () => `<h3>Dejale un tema a la Jefa</h3><textarea id="t-tema" placeholder="Una pregunta o un tema para la próxima reunión…"></textarea>
+  <div class="acciones"><button class="btn" id="b-tema" ${token ? '' : 'disabled'}>Anotar para la reunión</button></div>`;
+const conectarTema = () => { if ($('#b-tema')) $('#b-tema').onclick = mandarTema; };
+
+// ---------- panel de un empleado
+function abrir(id, refresco) {
+  const of = datos, e = of && of.empleados.find(x => x.id === id);
+  if (!e) return cerrar();
+  if (abierto !== id || !refresco) enfocar(id);
+  abierto = id; vista = null;
+  document.querySelectorAll('.av').forEach(b => b.classList.toggle('sel', b.dataset.id === id));
+  const st = estadoReal(e), {ahora, ultima} = enVivo(e.id);
+  const flujo = e.relanzar.flujo;
+  const gh = ahora ? `Trabajando ahora: <a href="${esc(ahora.html_url)}" target="_blank" rel="noopener">ver la corrida</a> (arrancó ${hace(new Date(ahora.run_started_at || ahora.created_at))}).`
+    : ultima ? `Última corrida ${ultima.conclusion === 'success' ? 'bien' : 'con error'}, ${hace(new Date(ultima.updated_at))}: <a href="${esc(ultima.html_url)}" target="_blank" rel="noopener">ver</a>.`
+    : token ? 'Sin corridas recientes.' : 'Conectá la clave para ver las corridas en vivo.';
+  const r = e.ritmo || {};
+  const ritmoHTML = `<h3>Ritmo</h3><div class="acciones" style="margin-top:0">
+      <select id="s-ritmo" aria-label="Ritmo">${Object.entries(of.ritmos || {}).map(([k, txt]) => `<option value="${esc(k)}" ${r.ritmo === k ? 'selected' : ''}>${esc(txt)}</option>`).join('')}</select>
+      <select id="s-dia" aria-label="Día">${['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'].map(d => `<option ${r.dia === d ? 'selected' : ''}>${d}</option>`).join('')}</select>
+      <select id="s-hora" aria-label="Hora">${Array.from({length: 24}, (_, h) => `<option value="${h}" ${r.hora === h ? 'selected' : ''}>${h}:00</option>`).join('')}</select>
+      <button class="btn" id="b-ritmo" ${token ? '' : 'disabled'}>Guardar</button></div>
+    <div class="nota">Ahora: ${esc(e.horario)}. Próximo turno: ${e.proximo ? esc(en(fecha(e.proximo))) : 'en pausa'}.${e.id === 'jefa' ? ' La Jefa usa Claude: más seguido = más cuota.' : ' Sin IA: no gasta cuota de Claude.'}</div>`;
+  const extra = e.id === 'jefa' ? `<div class="acciones"><button class="btn primario" data-vista="reunion">${of.reunion ? 'Ver la reunión' : 'Reunión semanal'}</button></div>${temaHTML()}`
+    : e.id === 'ventas' && pendientesDe('ventas').some(p => p.hecho_boton) ? `<div class="acciones"><button class="btn primario" data-vista="paravos">Ver lo que hay que mandar</button></div>` : '';
+  abrirPanel(`<div class="cab"><span class="cara">${INICIAL[e.id]}<span class="pt" style="background:${COLOR[st]}"></span></span>
+      <div><h2>${esc(e.nombre)}</h2><div class="puesto">${esc(e.puesto.toUpperCase())}</div></div></div>
+    <span class="pill c-${st}">${PALABRA[st]}</span> <span style="font-size:13px;color:var(--gris)">· último movimiento ${hace(fecha(e.cuando))}</span>
+    <p class="res">${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'Trabajando ahora en GitHub. ' + e.resumen : e.resumen)}</p>
+    ${e.arreglo ? `<div class="caja ojo"><b>Cómo se arregla:</b> ${esc(e.arreglo)}</div>` : ''}
+    ${extra}
+    ${seccionArreglo(e, st)}
+    ${e.tareas.length ? `<h3>${e.id === 'tecnico' ? 'Errores de las visitas (Sentry)' : 'Tareas'}</h3><ul>${e.tareas.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    ${e.detalle.length ? `<h3>${e.id === 'tecnico' ? 'Última vuelta' : 'Registro'}</h3><pre class="registro">${esc(e.detalle.join('\n'))}</pre>` : ''}
+    ${ritmoHTML}
+    <h3>En GitHub</h3><div class="gh" style="font-size:14px">${gh}</div>
+    <div class="acciones"><button class="btn primario" id="b-relanzar" ${token ? '' : 'disabled'}>↻ Relanzar ahora</button>
+      <a class="btn" href="https://github.com/${REPO}/actions/workflows/${flujo}" target="_blank" rel="noopener" style="text-decoration:none">Ver corridas</a></div>
+    <h3>Qué hace</h3><p style="margin:0;font-size:14px;line-height:1.5">${esc(e.hace_que)}</p>`, refresco);
+  $('#b-relanzar').onclick = () => relanzar(e);
+  $('#b-ritmo').onclick = () => guardarRitmo(e);
+  if ($('#b-arreglar')) $('#b-arreglar').onclick = () => pedirArreglo(e, st);
+  conectarTema();
+}
+function cerrar() {
+  const habia = abierto || vista; abierto = null; vista = null;
+  $('#panel').classList.remove('abierto'); $('#velo').classList.remove('abierto'); document.body.classList.remove('con-panel');
+  document.querySelectorAll('.av').forEach(b => b.classList.remove('sel'));
+  if (habia) vistaGeneral();
+}
+
+// ================= el técnico con IA (arreglar.yml)
+function seccionArreglo(e, st) {
+  const ult = arreglosDe(e.id).slice(-1)[0];
+  const corriendo = corridaArreglo(e.id);
+  const problema = st === 'aviso' || st === 'falla';
+  const bloque = (clase, cuerpo) => `<h3>El técnico</h3><div class="caja ${clase}">${cuerpo}</div>`;
+  if (corriendo || arreglandose(e.id) || (ult && ult.estado === 'pedido' && Date.now() - fecha(ult.actualizado) < 3 * 3600000))
+    return bloque('', `<b>Lo está arreglando…</b><div class="nota">Tarda unos minutos. No tenés que hacer nada.</div>`);
+  if (ult && ult.estado === 'necesita')
+    return bloque('ojo', `<b>Necesita algo tuyo:</b> ${esc(ult.que_hacer || ult.titulo)}<p style="margin:6px 0 0">${esc(ult.resumen)}</p>
+      <div class="acciones"><button class="btn primario" data-arreglo="${esc(ult.id)}" data-accion="visto" data-emp="${esc(e.id)}" ${token ? '' : 'disabled'}>Ya lo hice</button></div>`);
+  if (ult && ult.estado === 'aplicado')
+    return bloque('bien', `<b>Lo arregló solo ${hace(fecha(ult.actualizado))}:</b> ${esc(ult.titulo)}<p style="margin:6px 0 0">${esc(ult.resumen)}</p>
+      <div class="nota">Cambió: ${esc((ult.archivos || []).join(', '))}</div>
+      <div class="acciones"><button class="btn" data-arreglo="${esc(ult.id)}" data-accion="deshacer" data-emp="${esc(e.id)}" ${token ? '' : 'disabled'}>↩ Deshacer</button></div>`);
+  if (ult && ult.estado === 'explicado' && (problema || Date.now() - fecha(ult.actualizado) < 86400000))
+    return bloque('', `<b>Lo revisó:</b> ${esc(ult.titulo)}<p style="margin:6px 0 0">${esc(ult.resumen)}</p><div class="nota">No hacía falta cambiar nada.</div>`);
+  const previo = ult && ult.estado === 'fallo' ? `<p style="margin:0 0 6px">El último intento no salió: ${esc(ult.error || ult.resumen || ult.titulo)}</p>` : '';
+  if (!problema) return previo ? bloque('mal', previo) : '';
+  return bloque(e.solo ? '' : 'ojo', previo + (e.solo ? '<b>No hace falta el técnico</b><div class="nota" style="margin:4px 0 8px">Se resuelve solo o es algo para vos. Si querés, igual lo podés llamar.</div>'
+      : '<b>El técnico lo va a mirar solo</b><div class="nota" style="margin:4px 0 8px">El turno lo llama en su próxima vuelta. Si no querés esperar:</div>')
+    + `<textarea id="t-nota" placeholder="¿Algo más que tenga que saber? (opcional)" style="min-height:52px"></textarea>
+    <div class="acciones"><button class="btn primario" id="b-arreglar" ${token ? '' : 'disabled'}>Arreglar ahora</button></div>`);
+}
+async function pedirArreglo(e, st) {
+  const nota = $('#t-nota') ? $('#t-nota').value.trim() : '';
+  const id = Date.now().toString(36) + '-' + e.id;
+  const problema = [`${e.nombre} (${e.puesto}) está en "${PALABRA[st]}": ${e.resumen}`, e.arreglo ? 'Lo que sugiere la oficina: ' + e.arreglo : '',
+    e.tareas.length ? 'Tareas:\n' + e.tareas.join('\n') : '', e.detalle.length ? 'Registro:\n' + e.detalle.slice(-12).join('\n') : '', nota ? 'Nota de Mateo: ' + nota : ''].filter(Boolean).join('\n');
+  try {
+    await gh('/actions/workflows/arreglar.yml/dispatches', {method: 'POST', body: JSON.stringify({ref: 'main', inputs: {accion: 'arreglar', id, empleado: e.id, problema: problema.slice(0, 6000)}})});
+    enviados[e.id] = Date.now();
+    toast(`El técnico arranca con ${e.nombre}. Si necesita algo tuyo, te avisa.`);
+    pintar(); setTimeout(cargar, 15000);
+  } catch (err) { toast('No se pudo pedir el arreglo: ' + err.message); }
+}
+async function decidirArreglo(accion, id, emp) {
+  if (accion === 'deshacer' && !confirm('¿Deshacer el arreglo que hizo el técnico? Vuelve groso.shop a como estaba.')) return;
+  try {
+    await gh('/actions/workflows/arreglar.yml/dispatches', {method: 'POST', body: JSON.stringify({ref: 'main', inputs: {accion, id, empleado: emp}})});
+    const a = (datos.arreglos || []).find(x => x.id === id);
+    if (a) { a.estado = accion === 'deshacer' ? 'deshecho' : 'visto'; a.actualizado = new Date().toISOString(); }
+    datos.pendientes = (datos.pendientes || []).filter(p => p.arreglo !== id);
+    toast(accion === 'deshacer' ? 'Deshaciendo: en unos minutos vuelve a como estaba.' : 'Gracias: el equipo sigue solo.');
+    pintar(); setTimeout(cargar, 20000);
+  } catch (err) { toast('No se pudo: ' + err.message); }
+}
+
+// ================= acciones que escriben en el repo
+async function relanzar(e) {
+  const {flujo, inputs} = e.relanzar;
+  if (!confirm(`¿Relanzar a ${e.nombre} ahora?` + (e.id === 'jefa' ? ' Arma la reunión con Claude (usa cuota).' : ''))) return;
+  try {
+    await gh(`/actions/workflows/${flujo}/dispatches`, {method: 'POST', body: JSON.stringify({ref: 'main', inputs})});
+    enviados[e.id] = Date.now();
+    toast(`${e.nombre} arrancó. En un minuto la vas a ver trabajando.`);
+    pintar(); setTimeout(cargar, 10000);
+  } catch (err) { toast('No se pudo relanzar: ' + err.message); }
+}
+const reunionYa = () => relanzar(datos.empleados.find(e => e.id === 'jefa'));
+async function guardarRitmo(e) {
+  const nuevo = {ritmo: $('#s-ritmo').value, dia: $('#s-dia').value, hora: +$('#s-hora').value};
+  try {
+    await cambiarJSON('ritmo.json', d => { d[e.id] = nuevo; }, `Oficina: ritmo de ${e.nombre} → ${nuevo.ritmo}`);
+    e.ritmo = nuevo; e.horario = (datos.ritmos || {})[nuevo.ritmo] || nuevo.ritmo;
+    toast(`Listo: ${e.nombre} pasa a "${e.horario.toLowerCase()}". Corre desde el próximo turno.`);
+  } catch (err) { toast('No se pudo guardar el ritmo: ' + err.message); }
+}
+async function marcarHecho(id, como) {
+  try {
+    await cambiarJSON('estado/hechos.json', d => { d[id] = {como, cuando: new Date().toISOString().slice(0, 16)}; }, `Oficina: ${id} (${como})`);
+    datos.pendientes = (datos.pendientes || []).filter(p => p.id !== id);
+    toast(como === 'mandado' ? 'Anotado. Ventas lo saca de la lista.' : 'Anotado: no corresponde.');
+    pintar();
+  } catch (err) { toast('No se pudo anotar: ' + err.message); }
+}
+async function guardarRespuestas() {
+  document.querySelectorAll('[data-resp]').forEach(t => { if (t.value.trim()) borrador.respuestas[t.dataset.resp] = t.value.trim(); });
+  const r = datos.reunion;
+  if (!Object.keys(borrador.respuestas).length && !Object.keys(borrador.decisiones).length) return toast('No hay respuestas nuevas para guardar.');
+  try {
+    await cambiarJSON(r.archivo, d => { d.respuestas = Object.assign(d.respuestas || {}, borrador.respuestas); d.decisiones = Object.assign(d.decisiones || {}, borrador.decisiones); }, 'Oficina: respuestas de la reunión');
+    r.respuestas = Object.assign(r.respuestas || {}, borrador.respuestas); r.decisiones = Object.assign(r.decisiones || {}, borrador.decisiones);
+    r.sin_responder = (r.preguntas || []).filter(p => !String(r.respuestas[p.id] || '').trim()).length;
+    r.ideas_sin_decidir = (r.ideas || []).filter(i => !r.decisiones[i.id]).length;
+    borrador.respuestas = {}; borrador.decisiones = {};
+    datos.pendientes = (datos.pendientes || []).filter(p => p.id !== 'reunion' || r.sin_responder || r.ideas_sin_decidir);
+    toast('Guardado. El equipo lo lee en su próximo turno.');
+    pintar();
+  } catch (err) { toast('No se pudo guardar: ' + err.message); }
+}
+async function mandarTema() {
+  const txt = $('#t-tema').value.trim().replace(/\s+/g, ' ');
+  if (txt.length < 6) return toast('Escribí un poco más el tema.');
+  try {
+    const {sha, texto} = await leerArchivo('reuniones/temas.md', '# Temas para la próxima reunión\n');
+    const hoy = new Date().toLocaleDateString('es-AR', {timeZone: 'America/Argentina/Buenos_Aires', day: '2-digit', month: '2-digit'});
+    await escribirArchivo('reuniones/temas.md', texto.trimEnd() + `\n- ${txt} (${hoy})\n`, sha, 'Oficina: tema para la reunión');
+    $('#t-tema').value = '';
+    toast('Anotado. La Jefa lo contesta en la próxima reunión.');
+  } catch (err) { toast('No se pudo anotar: ' + err.message); }
+}
+async function alternarPausa() {
+  try {
+    const f = await gh('/contents/PAUSA?ref=main', {permitir404: true});
+    if (f) {
+      if (!confirm('¿Reanudar la oficina? Todos vuelven a trabajar en su próximo turno.')) return;
+      await gh('/contents/PAUSA', {method: 'DELETE', body: JSON.stringify({message: 'Oficina: se reanuda', sha: f.sha, branch: 'main'})});
+      toast('Reanudada.');
+    } else {
+      if (!confirm('¿Pausar la oficina? Nadie vigila ni trabaja hasta que la reanudes.')) return;
+      await gh('/contents/PAUSA', {method: 'PUT', body: JSON.stringify({message: 'Oficina: pausa', content: a64('pausado desde la oficina\n'), branch: 'main'})});
+      toast('En pausa. Nadie trabaja hasta que la reanudes.');
+    }
+    cargar();
+  } catch (err) { toast('No se pudo: ' + err.message); }
+}
+let relojToast;
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('ver'); clearTimeout(relojToast); relojToast = setTimeout(() => el.classList.remove('ver'), Math.max(4500, t.length * 70)); }
+
+// ================= eventos
+document.addEventListener('click', ev => {
+  const h = ev.target.closest('[data-hecho]');
+  if (h) return marcarHecho(h.dataset.hecho, h.dataset.como);
+  const a = ev.target.closest('[data-arreglo]');
+  if (a) return decidirArreglo(a.dataset.accion, a.dataset.arreglo, a.dataset.emp);
+  const vb = ev.target.closest('[data-vista]');
+  if (vb) return abrirVista(vb.dataset.vista);
+  const q = ev.target.closest('.chip,.av,a[data-id]');
+  if (q && q.dataset.id) { ev.preventDefault(); abrir(q.dataset.id); }
+});
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape') cerrar(); });
+addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos'].includes(id) ? abrirVista(id) : abrir(id); });
+$('#velo').onclick = cerrar;
+$('#paravos').onclick = () => abrirVista('paravos');
+$('#b-vista').onclick = () => { cerrar(); vistaGeneral(); };
+$('#b-actualizar').onclick = () => { toast('Actualizando…'); cargar(); };
+$('#b-pausa').onclick = alternarPausa;
+$('#b-token').onclick = () => { const c = $('#conectar'); c.style.display = c.style.display === 'block' ? 'none' : 'block'; $('#i-token').focus(); };
+$('#b-cancelar').onclick = () => { $('#conectar').style.display = 'none'; };
+$('#b-guardar').onclick = () => {
+  token = $('#i-token').value.trim(); guardado('groso_oficina_token', token);
+  $('#i-token').value = ''; $('#conectar').style.display = 'none';
+  try { navigator.storage && navigator.storage.persist && navigator.storage.persist(); } catch (e) {}
+  if (token && guardado('groso_oficina_token') !== token) setTimeout(() => toast('Ojo: este navegador no guarda la clave (¿modo privado o abierta desde Instagram/WhatsApp?). Abrila en Safari o Chrome.'), 600);
+  cargar();
+};
+
+medir();
+cuadro();
+cargar();
+setInterval(() => { if (token && !document.hidden) cargar(); else if (datos) pintar(); }, 60000);
+</script>
+</body>
+</html>
