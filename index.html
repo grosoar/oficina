@@ -835,10 +835,11 @@ function pintar() {
     return `<button class="av${abierto === e.id ? ' sel' : ''}" data-id="${e.id}" title="${esc(e.nombre + ' · ' + PALABRA[st])}"><span class="cara">${INICIAL[e.id] || e.nombre[0]}<span class="pt" style="background:${COLOR[st]}"></span></span><small>${esc(e.nombre.split(' ')[0])}</small></button>`;
   }).join('') + `<span class="sep"></span>
     <button class="av txt${vista === 'reunion' ? ' sel' : ''}" data-vista="reunion"><span class="cara">R${reunionPendiente() ? `<b>${(reu.sin_responder || 0) + (reu.ideas_sin_decidir || 0)}</b>` : ''}</span><small>Reunión</small></button>
+    <button class="av txt${vista === 'producto' ? ' sel' : ''}" data-vista="producto"><span class="cara">P${(of.propuestas || []).filter(x => (x.estado || 'propuesta') === 'propuesta').length ? `<b>${of.propuestas.filter(x => (x.estado || 'propuesta') === 'propuesta').length}</b>` : ''}</span><small>Producto</small></button>
     <button class="av txt${vista === 'paravos' ? ' sel' : ''}" data-vista="paravos"><span class="cara">!${total ? `<b>${total}</b>` : ''}</span><small>Para vos</small></button>`;
   if (abierto) abrir(abierto, true);
   else if (vista) abrirVista(vista, true);
-  else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
+  else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos', 'producto'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
 }
 
 function abrirPanel(html, refresco) {
@@ -865,11 +866,38 @@ function abrirVista(cual, refresco) {
         const e = of.empleados.find(x => x.id === p.quien) || {};
         const botones = p.hecho_boton ? `<div class="acciones"><button class="btn primario" data-hecho="${esc(p.id)}" data-como="mandado" ${token ? '' : 'disabled'}>Ya lo mandé</button><button class="btn" data-hecho="${esc(p.id)}" data-como="no corresponde" ${token ? '' : 'disabled'}>No corresponde</button></div>`
           : p.abre === 'reunion' ? `<div class="acciones"><button class="btn primario" data-vista="reunion">Abrir la reunión</button></div>`
+          : p.abre === 'producto' ? `<div class="acciones"><button class="btn primario" data-vista="producto">Ver las propuestas</button></div>`
           : p.arreglo ? `<div class="acciones"><button class="btn primario" data-arreglo="${esc(p.arreglo)}" data-accion="visto" data-emp="${esc(p.quien)}" ${token ? '' : 'disabled'}>Ya lo hice</button></div>` : '';
         return `<div class="item"><div class="meta" style="margin:0 0 4px"><a class="link" href="#${esc(p.quien)}" data-id="${esc(p.quien)}">${esc(e.nombre || p.quien)}</a></div>${esc(p.texto)}${botones}</div>`;
       }).join('') || '<p>Nada: todo en orden.</p>'}
       ${solos.length ? `<h3>Lo que arreglaron solos (3 días)</h3><ul>${solos.map(a => `<li><b>${esc((of.empleados.find(x => x.id === a.empleado) || {}).nombre || a.empleado)}</b>: ${esc(a.titulo)}</li>`).join('')}</ul>` : ''}
       ${(of.hechos_recientes || []).length ? `<h3>Lo último que marcaste</h3><ul>${of.hechos_recientes.map(([id, h]) => `<li>${esc(id)}: ${esc(h.como || 'hecho')} · ${esc(hace(fecha(h.cuando)))}</li>`).join('')}</ul>` : ''}`, refresco);
+    return;
+  }
+  if (cual === 'producto') {
+    if (!refresco) enfocar('tendencias');
+    const ps = of.propuestas || [];
+    const link = (u, txt) => /^https?:/.test(u || '') ? `<a class="link" href="${esc(u)}" target="_blank" rel="noopener">${esc(txt)}</a>` : esc(txt);
+    const ESTADO = {propuesta: 'Para decidir', hacerla: 'La hacemos', 'mas adelante': 'Más adelante', descartada: 'Descartada'};
+    const tend = of.empleados.find(e => e.id === 'tendencias') || {};
+    abrirPanel(`<h2>Próximos lanzamientos</h2><p class="nota">Las propone Tendencias y producto a partir de tus referencias; Diseño las dibuja y Marketing dice cómo las lanzaría. Vos decidís.</p>
+      ${ps.map(x => { const est = x.estado || 'propuesta';
+        return `<div class="item"><div class="meta" style="margin:0 0 4px">${esc(ESTADO[est] || est)} · ${esc((x.id || '').slice(8, 10) + '/' + (x.id || '').slice(5, 7))}</div><b style="font-size:16px">${esc(x.prenda)}</b>
+        <p style="margin:6px 0;font-size:14px;line-height:1.45">${esc(x.idea)}</p>
+        <div class="meta"><span>Inspirada en: ${(x.inspirada_en || []).map(r => link(r.link, r.marca)).join(', ') || '—'}</span>
+          <span>Corte: ${esc(x.corte)} · Tela: ${esc(x.tela)}</span><span>Colores: ${esc((x.colores || []).join(', '))}</span>
+          <span>Detalles: ${esc((x.detalles || []).join(' · '))}</span>
+          <span>Costo estimado: ${esc(x.costo_estimado)} · Precio sugerido: ${esc(x.precio_sugerido)}</span>
+          <span>Lanzamiento sugerido: ${esc(x.lanzamiento_sugerido)}</span>
+          ${(x.proveedores || []).length ? `<span>Proveedores: ${x.proveedores.map(v => link(v.contacto, v.nombre)).join(', ')}</span>` : ''}
+          ${x.riesgos ? `<span>Riesgos: ${esc(x.riesgos)}</span>` : ''}
+          ${x.marketing ? `<span><b>Marketing:</b> ${esc(x.marketing)}</span>` : ''}</div>
+        <div class="acciones">${x.diseno ? `<button class="btn" data-pieza="${esc(x.diseno)}" ${token ? '' : 'disabled'}>Ver la lámina</button>` : '<span class="nota" style="margin:0">Diseño la dibuja en su próximo turno.</span>'}</div>
+        ${est === 'propuesta' ? `<textarea id="n-${esc(x.id)}" placeholder="¿Algo para cambiarle? (opcional)" style="min-height:44px;margin-top:8px"></textarea>
+        <div class="acciones">${[['hacerla', 'La hacemos'], ['mas adelante', 'Más adelante'], ['descartada', 'Descartar']].map(([k, t], i) => `<button class="btn${i ? '' : ' primario'}" data-propuesta="${esc(x.archivo)}" data-decision="${k}" data-pid="${esc(x.id)}" ${token ? '' : 'disabled'}>${t}</button>`).join('')}</div>`
+          : x.nota_mateo ? `<div class="nota">Tu nota: ${esc(x.nota_mateo)}</div>` : ''}</div>`; }).join('')
+        || `<p class="res">Todavía no hay propuestas. Tendencias arma las primeras ${esc(tend.proximo ? en(fecha(tend.proximo)) : 'pronto')} (${esc((tend.horario || '').toLowerCase())}).</p>`}
+      <h3>Tus referencias</h3><p class="nota">Están en contexto/referencias-producto.md. Para sumar una, dejásela como tema a la Jefa o pedímela.</p>`, refresco);
     return;
   }
   // la reunión semanal
@@ -1052,6 +1080,17 @@ async function marcarHecho(id, como) {
     pintar();
   } catch (err) { toast('No se pudo anotar: ' + err.message); }
 }
+async function decidirPropuesta(archivo, decision, pid) {
+  const nota = ($('#n-' + CSS.escape(pid)) || {}).value || '';
+  try {
+    await cambiarJSON(archivo, d => { d.estado = decision; d.decidido = new Date().toISOString().slice(0, 16); if (nota.trim()) d.nota_mateo = nota.trim(); }, `Oficina: propuesta ${pid} → ${decision}`);
+    const x = (datos.propuestas || []).find(y => y.archivo === archivo);
+    if (x) { x.estado = decision; if (nota.trim()) x.nota_mateo = nota.trim(); }
+    datos.pendientes = (datos.pendientes || []).filter(p => p.id !== 'producto' || (datos.propuestas || []).some(y => (y.estado || 'propuesta') === 'propuesta'));
+    toast(decision === 'hacerla' ? 'Anotado: la hacemos. El equipo arranca con proveedores y costos.' : decision === 'descartada' ? 'Descartada: no la vuelven a proponer.' : 'Anotado para más adelante.');
+    pintar();
+  } catch (err) { toast('No se pudo guardar: ' + err.message); }
+}
 async function guardarRespuestas() {
   document.querySelectorAll('[data-resp]').forEach(t => { if (t.value.trim()) borrador.respuestas[t.dataset.resp] = t.value.trim(); });
   const r = datos.reunion;
@@ -1098,6 +1137,8 @@ function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add
 
 // ================= eventos
 document.addEventListener('click', ev => {
+  const pr = ev.target.closest('[data-propuesta]');
+  if (pr) return decidirPropuesta(pr.dataset.propuesta, pr.dataset.decision, pr.dataset.pid);
   const pz = ev.target.closest('[data-pieza]');
   if (pz) return verPieza(pz.dataset.pieza);
   const h = ev.target.closest('[data-hecho]');
@@ -1110,7 +1151,7 @@ document.addEventListener('click', ev => {
   if (q && q.dataset.id) { ev.preventDefault(); abrir(q.dataset.id); }
 });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape') cerrar(); });
-addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos'].includes(id) ? abrirVista(id) : abrir(id); });
+addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos', 'producto'].includes(id) ? abrirVista(id) : abrir(id); });
 $('#velo').onclick = cerrar;
 $('#paravos').onclick = () => abrirVista('paravos');
 $('#b-vista').onclick = () => { cerrar(); vistaGeneral(); };
