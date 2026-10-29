@@ -180,6 +180,29 @@ button,textarea,input,select{font:inherit;color:inherit}
 .tarea p{margin:3px 0 0;font-size:14.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
 .tarea .resp{padding:10px 0 0;grid-column:1/-1}
 .tarea .resp button{padding:11px 8px;font-size:14px}
+.emp-top{display:flex;gap:14px;align-items:center;padding-right:44px}
+.emp-top .cara{width:54px;height:54px;font-size:17px}
+.emp-top h2{font-size:20px}
+.estado-gran{display:flex;align-items:center;gap:10px;margin:14px 0 4px;font-size:12.5px;color:var(--gris)}
+.estado-gran .pill{font-size:11px;padding:4px 10px}
+.dicho{background:var(--grafito);color:var(--tiza);border-radius:6px;padding:16px 18px;margin:8px 0 14px;font-size:16px;line-height:1.4}
+.dicho small{display:block;font-family:var(--m);font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;margin-bottom:6px}
+.dicho.ojo{background:var(--ojo);color:var(--grafito)}.dicho.mal{background:var(--rojo);color:#fff}
+.sec{font-family:var(--m);font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--gris);margin:20px 0 8px;display:flex;justify-content:space-between;align-items:center}
+.sec b{background:var(--grafito);color:var(--tiza);border-radius:2px;padding:1px 6px;font-weight:500}
+.tiras{display:flex;gap:8px;overflow-x:auto;margin:0 -22px;padding:2px 22px 8px;scroll-snap-type:x mandatory;scrollbar-width:thin}
+.tira{flex:0 0 78%;max-width:300px;scroll-snap-align:start;background:#fff;border:1px solid var(--linea);border-top:3px solid var(--grafito);border-radius:5px;padding:12px 13px;display:flex;flex-direction:column;gap:6px}
+.tira b{font-size:14.5px;line-height:1.25}
+.tira p{margin:0;font-size:13px;line-height:1.4;color:#3A3936;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.tira a{margin-top:auto;font-size:12.5px}
+.tira.q{border-top-color:var(--rojo)}
+.piezas{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+.piezas button{border:1px solid var(--linea);background:#fff;border-radius:5px;padding:16px 10px;font-size:13px;font-weight:500;cursor:pointer;text-align:left;line-height:1.3}
+.piezas button:hover{border-color:var(--grafito)}
+.plegable{border-top:1px solid var(--linea);margin-top:6px}
+.plegable>summary{cursor:pointer;font-family:var(--m);font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--gris);padding:12px 0;list-style:none;display:flex;justify-content:space-between}
+.plegable>summary::after{content:'+'}.plegable[open]>summary::after{content:'–'}
+.grande-btn{display:flex;gap:8px;margin:14px 0 0}.grande-btn a.btn{color:var(--grafito)}.grande-btn .btn{flex:1;padding:13px 10px;font-size:14px;font-weight:600;text-align:center;text-decoration:none}
 #conectar{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(470px,calc(100vw - 24px));padding:22px;z-index:6;display:none;background:var(--tiza);border:1px solid var(--linea);border-radius:4px;box-shadow:var(--sombra)}
 #conectar h2{font-family:var(--d);font-weight:400;font-size:16px;letter-spacing:.06em;margin:0 0 8px}
 #conectar ol{padding-left:20px;margin:8px 0;font-size:14px;line-height:1.5}
@@ -1118,7 +1141,7 @@ function abrirVista(cual, refresco) {
     const ESTADO = {va: 'Va', 'mas adelante': 'Más adelante', descartado: 'No'};
     const nuevos = gs.filter(g => (g.estado || 'propuesta') === 'propuesta');
     const items = nuevos.map(g => { const ia = g.tipo === 'ia';
-      return {id: g.archivo, ref: g, quien: 'Guionista', qid: 'guion', tag: ia ? 'IA · Higgsfield' : 'Para grabar', tono: ia ? 'ia' : 'rodaje', cuando: (g.archivo || '').slice(15, 17) + '/' + (g.archivo || '').slice(12, 14),
+      return {id: g.archivo, ref: g, quien: 'Guionista', qid: 'guion', tag: ia ? 'IA · Higgsfield' : 'Para grabar', tono: ia ? 'ia' : 'rodaje', cuando: (g.archivo || '').slice(16, 18) + '/' + (g.archivo || '').slice(13, 15),
         titulo: g.titulo, cita: g.gancho, sub: g.escena, pasos: g.beats || [],
         chips: [['Prendas', (g.prendas || []).join(', ')], ['Dónde', g.lugar], [ia ? 'Personaje' : 'Quién actúa', g.personaje]],
         masTitulo: ia ? 'Ver por qué, referente y prompt' : 'Ver por qué, referente y qué hace falta',
@@ -1193,11 +1216,12 @@ const conectarTema = () => { if ($('#b-tema')) $('#b-tema').onclick = mandarTema
 
 // ---------- lo que entregó un empleado con IA (hallazgos, ideas, preguntas y, en Diseño, las piezas)
 function trabajoIA(e) {
-  const link = u => /^https?:/.test(u || '') ? ` <a class="link" href="${esc(u)}" target="_blank" rel="noopener">ver</a>` : '';
-  return ((e.archivos || []).length ? `<h3>Piezas</h3>${e.archivos.map(a => `<div class="item"><b>${esc(a.split('/').pop().replace(/\.html$/, ''))}</b><div class="acciones"><button class="btn" data-pieza="${esc(a)}" ${token ? '' : 'disabled'}>Ver la pieza</button></div></div>`).join('')}` : '')
-    + ((e.hallazgos || []).length ? `<h3>Lo que encontró</h3>${e.hallazgos.map(h => `<div class="item"><b>${esc(h.titulo)}</b><div class="meta">${esc(h.detalle)}${link(h.link)}</div></div>`).join('')}` : '')
-    + ((e.ideas || []).length ? `<h3>Ideas para la Jefa</h3><ul>${e.ideas.map(i => `<li>${esc(i.titulo)}${link(i.fuente)}</li>`).join('')}</ul><div class="nota">La Jefa las filtra: si valen la pena, te llegan en la reunión.</div>` : '')
-    + ((e.preguntas || []).length ? `<h3>Sus preguntas</h3><ul>${e.preguntas.map(q => `<li>${esc(q.texto)}</li>`).join('')}</ul><div class="nota">Las contestás en la reunión del domingo, o dejale el tema a la Jefa.</div>` : '');
+  const link = (u, t = 'Abrir') => /^https?:/.test(u || '') ? `<a class="link" href="${esc(u)}" target="_blank" rel="noopener">${t} →</a>` : '';
+  const h = e.hallazgos || [], ideas = e.ideas || [], q = e.preguntas || [], arch = e.archivos || [];
+  return (arch.length ? `<div class="sec">Piezas <b>${arch.length}</b></div><div class="piezas">${arch.map(a => `<button data-pieza="${esc(a)}" ${token ? '' : 'disabled'}>${esc(a.split('/').pop().replace(/\.(html|json)$/, '').replace(/^\d{4}-\d{2}-\d{2}-/, '').replace(/[-_]/g, ' '))}<br><small style="color:var(--gris)">Ver la pieza →</small></button>`).join('')}</div>` : '')
+    + (h.length ? `<div class="sec">Lo que encontró <b>${h.length}</b></div><div class="tiras">${h.map(x => `<div class="tira"><b>${esc(x.titulo)}</b><p>${esc(x.detalle)}</p>${link(x.link)}</div>`).join('')}</div>` : '')
+    + (ideas.length ? `<div class="sec">Ideas para la Jefa <b>${ideas.length}</b></div><div class="tiras">${ideas.map(i => `<div class="tira"><b>${esc(i.titulo)}</b><p>${esc(i.esperado || i.costo || '')}</p>${link(i.fuente, 'Fuente')}</div>`).join('')}</div><div class="nota">La Jefa las filtra: si valen la pena, te llegan en la reunión.</div>` : '')
+    + (q.length ? `<div class="sec">Te pregunta <b>${q.length}</b></div><div class="tiras">${q.map(x => `<div class="tira q"><b>${esc(x.texto)}</b></div>`).join('')}</div><div class="grande-btn"><button class="btn primario" data-vista="reunion">Contestar en la reunión</button></div>` : '');
 }
 // fotos del repo privado: con la clave se bajan de GitHub (y quedan guardadas mientras la página está abierta); sin clave, del disco
 const fotosCache = {};
@@ -1256,7 +1280,7 @@ function abrir(id, refresco) {
     : ultima ? `Última corrida ${ultima.conclusion === 'success' ? 'bien' : 'con error'}, ${hace(new Date(ultima.updated_at))}: <a href="${esc(ultima.html_url)}" target="_blank" rel="noopener">ver</a>.`
     : token ? 'Sin corridas recientes.' : 'Conectá la clave para ver las corridas en vivo.';
   const r = e.ritmo || {};
-  const ritmoHTML = `<h3>Ritmo</h3><div class="acciones" style="margin-top:0">
+  const ritmoHTML = `<div class="acciones" style="margin-top:0">
       <select id="s-ritmo" aria-label="Ritmo">${Object.entries(of.ritmos || {}).map(([k, txt]) => `<option value="${esc(k)}" ${r.ritmo === k ? 'selected' : ''}>${esc(txt)}</option>`).join('')}</select>
       <select id="s-dia" aria-label="Día">${['lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado', 'domingo'].map(d => `<option ${r.dia === d ? 'selected' : ''}>${d}</option>`).join('')}</select>
       <select id="s-hora" aria-label="Hora">${Array.from({length: 24}, (_, h) => `<option value="${h}" ${r.hora === h ? 'selected' : ''}>${h}:00</option>`).join('')}</select>
@@ -1266,20 +1290,21 @@ function abrir(id, refresco) {
     : e.id === 'ventas' && pendientesDe('ventas').some(p => p.hecho_boton) ? `<div class="acciones"><button class="btn primario" data-vista="paravos">Ver lo que hay que mandar</button></div>`
     : e.id === 'guion' ? `<div class="acciones"><button class="btn primario" data-vista="guiones">Ver los guiones</button></div>` + trabajoIA(e)
     : CON_IA.includes(e.id) ? trabajoIA(e) : '';
-  abrirPanel(`<div class="cab"><span class="cara">${INICIAL[e.id]}<span class="pt" style="background:${COLOR[st]}"></span></span>
+  const dice = st === 'trabajando' && e.estado !== 'trabajando' ? 'Trabajando ahora en GitHub. ' + e.resumen : e.resumen;
+  const nUlt = (e.detalle || []).length;
+  abrirPanel(`<div class="emp-top"><span class="cara">${INICIAL[e.id]}<span class="pt" style="background:${COLOR[st]}"></span></span>
       <div><h2>${esc(e.nombre)}</h2><div class="puesto">${esc(e.puesto.toUpperCase())}</div></div></div>
-    <span class="pill c-${st}">${PALABRA[st]}</span> <span style="font-size:13px;color:var(--gris)">· último movimiento ${hace(fecha(e.cuando))}</span>
-    <p class="res">${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'Trabajando ahora en GitHub. ' + e.resumen : e.resumen)}</p>
+    <div class="estado-gran"><span class="pill c-${st}">${PALABRA[st]}</span><span>último movimiento ${hace(fecha(e.cuando))}${e.proximo ? ' · próximo turno ' + esc(en(fecha(e.proximo))) : ''}</span></div>
+    <div class="dicho${st === 'falla' ? ' mal' : st === 'aviso' ? ' ojo' : ''}"><small>${st === 'trabajando' ? 'Está haciendo' : 'Lo último'}</small>${esc(dice)}</div>
     ${e.arreglo ? `<div class="caja ojo"><b>Cómo se arregla:</b> ${esc(e.arreglo)}</div>` : ''}
     ${extra}
     ${seccionArreglo(e, st)}
-    ${e.tareas.length && !CON_IA.includes(e.id) ? `<h3>${e.id === 'tecnico' ? 'Errores de las visitas (Sentry)' : 'Tareas'}</h3><ul>${e.tareas.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
-    ${e.detalle.length ? `<h3>${e.id === 'tecnico' ? 'Última vuelta' : 'Registro'}</h3><pre class="registro">${esc(e.detalle.join('\n'))}</pre>` : ''}
-    ${ritmoHTML}
-    <h3>En GitHub</h3><div class="gh" style="font-size:14px">${gh}</div>
-    <div class="acciones"><button class="btn primario" id="b-relanzar" ${token ? '' : 'disabled'}>↻ Relanzar ahora</button>
-      <a class="btn" href="https://github.com/${REPO}/actions/workflows/${flujo}" target="_blank" rel="noopener" style="text-decoration:none">Ver corridas</a></div>
-    <h3>Qué hace</h3><p style="margin:0;font-size:14px;line-height:1.5">${esc(e.hace_que)}</p>`, refresco);
+    ${e.tareas.length && !CON_IA.includes(e.id) ? `<div class="sec">${e.id === 'tecnico' ? 'Errores de las visitas (Sentry)' : 'Tareas'} <b>${e.tareas.length}</b></div><ul>${e.tareas.map(t => `<li>${esc(t)}</li>`).join('')}</ul>` : ''}
+    <div class="grande-btn"><button class="btn primario" id="b-relanzar" ${token ? '' : 'disabled'}>↻ Relanzar ahora</button><a class="btn" href="https://github.com/${REPO}/actions/workflows/${flujo}" target="_blank" rel="noopener">Ver corridas</a></div>
+    ${nUlt ? `<details class="plegable"><summary>${e.id === 'tecnico' ? 'Última vuelta' : 'Registro'}</summary><pre class="registro">${esc(e.detalle.join('\n'))}</pre></details>` : ''}
+    <details class="plegable"><summary>Ritmo</summary>${ritmoHTML}</details>
+    <details class="plegable"><summary>En GitHub</summary><div class="gh" style="font-size:14px;padding-bottom:10px">${gh}</div></details>
+    <details class="plegable"><summary>Qué hace</summary><p style="margin:0 0 10px;font-size:14px;line-height:1.5">${esc(e.hace_que)}</p></details>`, refresco);
   $('#b-relanzar').onclick = () => relanzar(e);
   $('#b-ritmo').onclick = () => guardarRitmo(e);
   if ($('#b-arreglar')) $('#b-arreglar').onclick = () => pedirArreglo(e, st);
