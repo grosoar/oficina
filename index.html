@@ -121,6 +121,65 @@ button,textarea,input,select{font:inherit;color:inherit}
 .opciones button.si{background:var(--grafito);color:var(--tiza);border-color:var(--grafito)}
 .fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:10px 0 4px}
 .fotos img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:2px;background:var(--niebla);cursor:zoom-in}
+.panel.ancho{width:min(560px,calc(100vw - 24px))}
+.cab2{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding-right:44px}
+.cab2 h2{font-size:17px}
+.cab2 .cuenta{font-family:var(--m);font-size:11px;color:var(--gris);white-space:nowrap}
+.puntos{display:flex;gap:5px;margin:12px 0 14px;flex-wrap:wrap}
+.puntos button{width:22px;height:6px;border-radius:3px;border:0;padding:0;background:var(--linea);cursor:pointer}
+.puntos button.hecho{background:var(--ok)}
+.puntos button.ahora{background:var(--grafito);width:34px}
+.carta{background:#fff;border:1px solid var(--linea);border-radius:6px;overflow:hidden;box-shadow:0 6px 22px rgba(26,26,26,.08)}
+.carta .franja{display:flex;align-items:center;gap:9px;padding:10px 14px;background:var(--niebla);border-bottom:1px solid var(--linea);font-size:12.5px;color:var(--gris)}
+.carta .franja .mini{width:26px;height:26px;border-radius:50%;background:var(--grafito);color:var(--tiza);display:grid;place-items:center;font-family:var(--d);font-size:9px;flex:none}
+.carta .franja b{color:var(--grafito);font-weight:500}
+.etq{margin-left:auto;font-family:var(--m);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:2px;background:var(--piedra);color:var(--grafito)}
+.etq.ia{background:var(--grafito);color:var(--tiza)}.etq.rodaje{background:#E3BC98}
+.carta .cuerpo{padding:16px 16px 6px}
+.carta .heroe{display:grid;gap:4px;grid-template-columns:repeat(3,1fr);margin:-16px -16px 14px}
+.carta .heroe img{width:100%;aspect-ratio:3/4;object-fit:cover;background:var(--niebla);cursor:zoom-in;display:block}
+.carta .heroe.uno{grid-template-columns:1fr}.carta .heroe.uno img{aspect-ratio:16/10}
+.carta h3.gran{font-family:var(--t);font-size:21px;font-weight:600;line-height:1.2;letter-spacing:-.01em;margin:0 0 8px;text-transform:none;color:var(--grafito)}
+.carta .sub{font-size:14.5px;line-height:1.45;color:#3A3936;margin:0 0 12px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.carta .cita{font-size:17px;line-height:1.35;font-style:italic;border-left:3px solid var(--grafito);padding:2px 0 2px 12px;margin:0 0 14px}
+.datos{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:6px;margin:0 0 12px}
+.datos div{background:var(--niebla);border-radius:4px;padding:8px 10px;min-width:0}
+.datos small{display:block;font-family:var(--m);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--gris);margin-bottom:2px}
+.datos span{font-size:13px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.pasos{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:6px;margin:0 0 12px}
+.pasos div{border:1px solid var(--linea);border-top:3px solid var(--grafito);border-radius:3px;padding:7px 9px;font-size:12.5px;line-height:1.35;background:#fff}
+.pasos small{display:block;font-family:var(--m);font-size:10px;color:var(--gris);margin-bottom:2px}
+.carta details{margin:0 0 12px;font-size:13.5px;line-height:1.45}
+.carta summary{cursor:pointer;color:var(--gris);font-size:12.5px;font-weight:500;padding:4px 0;list-style:none}
+.carta summary::before{content:'+ '}.carta details[open] summary::before{content:'– '}
+.carta details .mas{padding:6px 0 0}.carta details .mas span{display:block;margin:5px 0}
+.carta details pre{white-space:pre-wrap;font-family:var(--m);font-size:11px;background:var(--niebla);padding:9px;border-radius:3px;margin:6px 0 0}
+.resp{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;padding:0 16px 16px}
+.resp.col{grid-auto-flow:row}
+.resp button{border:1px solid var(--linea);background:var(--tiza);border-radius:5px;padding:14px 8px;font-size:14.5px;font-weight:600;cursor:pointer;line-height:1.2;transition:transform .1s,background .15s}
+.resp button:hover{border-color:var(--grafito)}.resp button:active{transform:scale(.97)}
+.resp button.s,.resp button.p{background:var(--grafito);color:var(--tiza);border-color:var(--grafito)}
+.resp button:disabled{opacity:.4;cursor:not-allowed}
+.libre{padding:0 16px 14px}
+.libre .acciones{margin-top:6px}
+.nav{display:flex;justify-content:space-between;align-items:center;margin:10px 0 0}
+.nav button{border:0;background:transparent;color:var(--gris);font-size:13px;cursor:pointer;padding:6px 2px}
+.nav button:disabled{opacity:.25;cursor:default}
+.guardar{position:sticky;bottom:-22px;margin:16px -22px -22px;padding:12px 22px 16px;background:linear-gradient(to top,var(--tiza) 70%,rgba(241,239,233,0))}
+.guardar .btn{width:100%;padding:14px;font-size:15px;font-weight:600}
+.resumen-sem{margin-top:18px}.resumen-sem summary{cursor:pointer;font-family:var(--m);font-size:10.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--gris);padding:8px 0}
+.resumen-sem .item{margin:6px 0}
+.mazo-chico{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.mazo-chico span{font-size:12.5px;background:var(--niebla);border:1px solid var(--linea);border-radius:20px;padding:4px 10px}
+.mazo-chico span i{font-style:normal;color:var(--ok);margin-right:4px}
+.hoy{display:flex;align-items:center;gap:14px;background:var(--grafito);color:var(--tiza);border-radius:6px;padding:16px 18px;margin:12px 0 14px}
+.hoy b{font-family:var(--d);font-weight:400;font-size:34px;line-height:1}.hoy span{font-size:14px;line-height:1.35;opacity:.9}
+.tarea{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;background:#fff;border:1px solid var(--linea);border-left:4px solid var(--rojo);border-radius:5px;padding:13px 14px;margin:8px 0}
+.tarea .mini{width:34px;height:34px;border-radius:50%;background:var(--grafito);color:var(--tiza);display:grid;place-items:center;font-family:var(--d);font-size:11px}
+.tarea small{font-family:var(--m);font-size:10.5px;color:var(--gris);letter-spacing:.06em;text-transform:uppercase}
+.tarea p{margin:3px 0 0;font-size:14.5px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.tarea .resp{padding:10px 0 0;grid-column:1/-1}
+.tarea .resp button{padding:11px 8px;font-size:14px}
 #conectar{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(470px,calc(100vw - 24px));padding:22px;z-index:6;display:none;background:var(--tiza);border:1px solid var(--linea);border-radius:4px;box-shadow:var(--sombra)}
 #conectar h2{font-family:var(--d);font-weight:400;font-size:16px;letter-spacing:.06em;margin:0 0 8px}
 #conectar ol{padding-left:20px;margin:8px 0;font-size:14px;line-height:1.5}
@@ -143,7 +202,7 @@ body.con-panel #resumen{opacity:0;pointer-events:none}
   .marca h1 span{display:none}
   .chip .nombre{display:none}
   .chip.sel .nombre{display:block}
-  .panel{top:auto;left:8px;right:8px;bottom:8px;width:auto;max-height:64vh;transform:translateY(115%)}
+  .panel,.panel.ancho{top:auto;left:8px;right:8px;bottom:8px;width:auto;max-height:78vh;transform:translateY(115%)}
   .panel.abierto{transform:none}
   .btn{padding:7px 9px}
   .btn .t{display:none}
@@ -202,8 +261,8 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 const REPO = 'grosoar/groso-oficina';
 const COLOR = {ok: '#5F8A6B', trabajando: '#1A1A1A', aviso: '#C49A2C', falla: '#B5462F', descanso: '#B9B7B0', pausa: '#B9B7B0'};
 const PALABRA = {ok: 'al día', trabajando: 'trabajando', aviso: 'ojo', falla: 'falló', descanso: 'descansa', pausa: 'en pausa'};
-const INICIAL = {jefa: 'J', tecnico: 'T', ventas: 'V', competencia: 'C', tendencias: 'P', diseno: 'D', marketing: 'M', influencers: 'IN', desarrollo: 'DV', contenido: 'IA'};
-const CON_IA = ['competencia', 'tendencias', 'diseno', 'marketing', 'influencers', 'desarrollo', 'contenido'];  // empleado.yml
+const INICIAL = {jefa: 'J', tecnico: 'T', ventas: 'V', competencia: 'C', tendencias: 'P', diseno: 'D', marketing: 'M', influencers: 'IN', desarrollo: 'DV', guion: 'G', contenido: 'IA'};
+const CON_IA = ['competencia', 'tendencias', 'diseno', 'marketing', 'influencers', 'desarrollo', 'guion', 'contenido'];  // empleado.yml
 const FLUJO = {'turno.yml': 'Turno', 'jefa.yml': 'Reunión', 'arreglar.yml': 'Arreglar'};
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -411,6 +470,7 @@ const LOOK = {
   marketing: ['corto', '#5B4030', '#E4E3DF', '#1A1A1A', '#8A5B3D'],
   influencers: ['largo', '#2B1B14', '#F1EFE9', '#3A3936', '#C99A74'],
   desarrollo: ['corto', '#16120F', '#5A5A55', '#1A1A1A', '#E3BC98'],
+  guion: ['largo', '#3A2A1E', '#E4E3DF', '#5A5A55', '#D9B08C'],
   contenido: ['rodete', '#2B2119', '#1A1A1A', '#3A3936', '#B98563'],
 };
 
@@ -586,14 +646,14 @@ function sillon(padre, x, z, rotY = 0) {
 // ---------- lugares: dónde se sienta cada uno [x, z, mira hacia (rotY)]
 // dos filas: adelante los de la fase 1 y Marketing; atrás los que investigan y crean (miran hacia adelante)
 const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [.8, -1.2], ventas: [4.0, -1.2], marketing: [7.2, -1.2], influencers: [10.4, -1.2],
-  competencia: [-2.4, -6.0], tendencias: [.8, -6.0], diseno: [4.0, -6.0], contenido: [7.2, -6.0], desarrollo: [10.4, -6.0]};
+  competencia: [-2.4, -6.0], tendencias: [.2, -6.0], diseno: [2.8, -6.0], guion: [5.4, -6.0], contenido: [8.0, -6.0], desarrollo: [10.6, -6.0]};
 const PROXIMOS = [];  // escritorios vacíos con cartel (hoy no queda ninguno)
 const MESA = {x: -9.6, z: -5.6};
-// la mesa tiene 10 lugares: las dos cabeceras y cuatro por lado
+// la mesa tiene 11 lugares: las dos cabeceras, cuatro de un lado y cinco del otro
 const EN_MESA = {jefa: [MESA.x - 2.55, MESA.z, Math.PI / 2], tecnico: [MESA.x - 1.575, MESA.z - 1.05, 0], ventas: [MESA.x - .525, MESA.z - 1.05, 0],
   marketing: [MESA.x + .525, MESA.z - 1.05, 0], influencers: [MESA.x + 1.575, MESA.z - 1.05, 0],
-  competencia: [MESA.x - 1.575, MESA.z + 1.05, Math.PI], tendencias: [MESA.x - .525, MESA.z + 1.05, Math.PI],
-  diseno: [MESA.x + .525, MESA.z + 1.05, Math.PI], desarrollo: [MESA.x + 1.575, MESA.z + 1.05, Math.PI], contenido: [MESA.x + 2.55, MESA.z, -Math.PI / 2]};
+  competencia: [MESA.x - 1.84, MESA.z + 1.05, Math.PI], tendencias: [MESA.x - .92, MESA.z + 1.05, Math.PI], diseno: [MESA.x, MESA.z + 1.05, Math.PI],
+  guion: [MESA.x + .92, MESA.z + 1.05, Math.PI], desarrollo: [MESA.x + 1.84, MESA.z + 1.05, Math.PI], contenido: [MESA.x + 2.55, MESA.z, -Math.PI / 2]};
 const MATEO = {x: -9.4, z: 4.2};
 // cuatro sillas frente a tu escritorio: las ocupan, en orden, los que te necesitan
 const CON_MATEO = [[MATEO.x - 1.2, MATEO.z + 1.15, Math.PI], [MATEO.x - .4, MATEO.z + 1.15, Math.PI], [MATEO.x + .4, MATEO.z + 1.15, Math.PI], [MATEO.x + 1.2, MATEO.z + 1.15, Math.PI]];
@@ -667,7 +727,8 @@ function construir(of) {
   for (const y of [.05, 1.0, 2.6]) { caja(.06, .06, 4.6, mm, -6, y, -6.7, mundo, false); caja(7, .06, .06, mm, -9.5, y, -2, mundo, false); }
   caja(4.6, .08, 1.5, NOGAL_CLARO, MESA.x, .78, MESA.z, mundo);
   for (const sx of [-1.8, 1.8]) caja(.5, .74, 1.0, NOGAL, MESA.x + sx, .37, MESA.z, mundo);
-  for (const x of [-1.575, -.525, .525, 1.575]) { silla(mundo, MESA.x + x, MESA.z - 1.05, 0); silla(mundo, MESA.x + x, MESA.z + 1.05, Math.PI); }
+  for (const x of [-1.575, -.525, .525, 1.575]) silla(mundo, MESA.x + x, MESA.z - 1.05, 0);
+  for (const x of [-1.84, -.92, 0, .92, 1.84]) silla(mundo, MESA.x + x, MESA.z + 1.05, Math.PI);
   silla(mundo, MESA.x - 2.55, MESA.z, Math.PI / 2); silla(mundo, MESA.x + 2.55, MESA.z, -Math.PI / 2);
   lampara(mundo, MESA.x - 1.1, MESA.z, 2.35, .26, true); lampara(mundo, MESA.x + 1.1, MESA.z, 2.35, .26);
   retrato(mundo, -W + .04, 1.7, -5.6, Math.PI / 2, 1.1, .8, 9);
@@ -944,77 +1005,132 @@ function pintar() {
     <div><small>Socios</small><b>${n.socios ?? '—'}</b></div><div><small>${dias != null && dias >= 0 ? 'Lanzamiento' : 'Velocidad'}</small><b>${dias != null && dias >= 0 ? dias + ' d' : (n.velocidad ?? '—')}</b></div></div>
     <h2>El equipo</h2>${of.empleados.map(e => { const st = estadoReal(e); return `<div class="fila"><i style="background:${COLOR[st]}"></i><div><b style="font-weight:500">${esc(e.nombre)}</b> · ${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'trabajando ahora' : e.resumen.length > 90 ? e.resumen.slice(0, 88) + '…' : e.resumen)}</div></div>`; }).join('')}
     <div class="nota" style="margin-top:12px">Claude, últimos 7 días: ${u.turnos || 0} turnos · ${String(u.minutos || 0).replace('.', ',')} min (Sonnet)</div>`;
-  const reu = of.reunion;
+  const reu = of.reunion, nGuiones = (of.guiones || []).filter(g => (g.estado || 'propuesta') === 'propuesta').length;
   $('#dock').innerHTML = of.empleados.map(e => {
     const st = estadoReal(e);
     return `<button class="av${abierto === e.id ? ' sel' : ''}" data-id="${e.id}" title="${esc(e.nombre + ' · ' + PALABRA[st])}"><span class="cara">${INICIAL[e.id] || e.nombre[0]}<span class="pt" style="background:${COLOR[st]}"></span></span><small>${esc(e.nombre.split(' ')[0])}</small></button>`;
   }).join('') + `<span class="sep"></span>
     <button class="av txt${vista === 'reunion' ? ' sel' : ''}" data-vista="reunion"><span class="cara">R${reunionPendiente() ? `<b>${(reu.sin_responder || 0) + (reu.ideas_sin_decidir || 0)}</b>` : ''}</span><small>Reunión</small></button>
     <button class="av txt${vista === 'producto' ? ' sel' : ''}" data-vista="producto"><span class="cara">P${(of.propuestas || []).filter(x => (x.estado || 'propuesta') === 'propuesta').length ? `<b>${of.propuestas.filter(x => (x.estado || 'propuesta') === 'propuesta').length}</b>` : ''}</span><small>Producto</small></button>
+    <button class="av txt${vista === 'guiones' ? ' sel' : ''}" data-vista="guiones"><span class="cara">G${nGuiones ? `<b>${nGuiones}</b>` : ''}</span><small>Guiones</small></button>
     <button class="av txt${vista === 'paravos' ? ' sel' : ''}" data-vista="paravos"><span class="cara">!${total ? `<b>${total}</b>` : ''}</span><small>Para vos</small></button>`;
   if (abierto) abrir(abierto, true);
   else if (vista) abrirVista(vista, true);
-  else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos', 'producto'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
+  else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos', 'producto', 'guiones'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
 }
 
-function abrirPanel(html, refresco) {
+function abrirPanel(html, refresco, ancho) {
   const scroll = $('#panel').scrollTop;
   const borradores = {}; document.querySelectorAll('#panel textarea[id], #panel input[id]').forEach(x => { borradores[x.id] = x.value; });
   $('#panel').innerHTML = `<button class="btn cerrar" id="b-cerrar" aria-label="Cerrar">✕</button>` + html;
-  $('#panel').classList.add('abierto'); document.body.classList.add('con-panel');
+  $('#panel').classList.add('abierto'); $('#panel').classList.toggle('ancho', !!ancho); document.body.classList.add('con-panel');
   if (innerWidth <= 760) $('#velo').classList.add('abierto');
   $('#b-cerrar').onclick = cerrar;
   if (refresco) { $('#panel').scrollTop = scroll; for (const k in borradores) { const x = document.getElementById(k); if (x) x.value = borradores[k]; } }
 }
 
-// ---------- Para vos y la reunión
+// ---------- mazo de decisiones: una tarjeta por vez, con botones grandes
+const mazoPos = {}, mazoItems = {}, ELEGIR = {}, LIBRE = {};
+const linkA = (u, txt) => /^https?:/.test(u || '') ? `<a class="link" href="${esc(u)}" target="_blank" rel="noopener">${esc(txt)}</a>` : esc(txt);
+function avanzar(clave, quitando) {  // pasa a la que sigue sin responder (si la actual sale del mazo, la que sigue ocupa su lugar)
+  const items = mazoItems[clave] || [], c = mazoPos[clave] || 0;
+  if (quitando) { mazoPos[clave] = Math.min(c, Math.max(items.length - 2, 0)); return; }
+  const sig = items.findIndex((x, i) => i > c && !x.valor);
+  mazoPos[clave] = sig >= 0 ? sig : Math.min(c + 1, items.length - 1);
+}
+function mazoHTML(clave, items) {
+  mazoItems[clave] = items;
+  if (!items.length) return '';
+  let c = mazoPos[clave];
+  if (c == null || c >= items.length) { const p = items.findIndex(i => !i.valor); c = mazoPos[clave] = p < 0 ? 0 : p; }
+  const it = items[c], hechas = items.filter(i => i.valor).length;
+  const heroe = (it.fotos || []).length ? `<div class="heroe${it.fotos.length === 1 ? ' uno' : ''}">${it.fotos.slice(0, 3).map(f => `<img data-foto="${esc(f)}" alt="${esc(it.titulo)}" loading="lazy">`).join('')}</div>` : '';
+  const datos = (it.chips || []).filter(([, v]) => v && String(v).trim()).map(([k, v]) => `<div><small>${esc(k)}</small><span>${esc(v)}</span></div>`).join('');
+  const pasos = (it.pasos || []).map(t => { const m = String(t).match(/^\s*([\d.,–-]+\s*s?)\s*[:.-]\s*(.+)$/s); return `<div><small>${esc(m ? m[1] : '')}</small>${esc(m ? m[2] : t)}</div>`; }).join('');
+  const sinOps = !(it.ops || []).length;
+  const libre = it.libre ? `<div class="libre">${sinOps ? '' : '<details><summary>Escribir otra respuesta</summary>'}<textarea id="lib-${esc(clave)}-${esc(it.id)}" data-resp="${esc(it.id)}" placeholder="Tu respuesta" style="min-height:56px">${esc((it.ops || []).some(o => o.v === it.valor) ? '' : it.valor || '')}</textarea>
+    <div class="acciones"><button class="btn${sinOps ? ' primario' : ''}" data-mzlibre="${esc(clave)}" ${token ? '' : 'disabled'}>Responder</button></div>${sinOps ? '' : '</details>'}</div>` : '';
+  const botones = sinOps ? '' : `<div class="resp${it.ops.length > 3 ? ' col' : ''}">${it.ops.map((o, k) => `<button data-mz="${esc(clave)}" data-k="${k}" class="${it.valor ? (it.valor === o.v ? 's' : '') : (k === 0 ? 'p' : '')}" ${token ? '' : 'disabled'}>${esc(o.t)}</button>`).join('')}</div>`;
+  return `<div class="puntos">${items.map((x, i) => `<button data-mzgo="${esc(clave)}" data-i="${i}" class="${x.valor ? 'hecho' : ''}${i === c ? ' ahora' : ''}" aria-label="Tarjeta ${i + 1}"></button>`).join('')}</div>
+    <article class="carta">
+      <div class="franja"><span class="mini">${INICIAL[it.qid] || '·'}</span><span><b>${esc(it.quien)}</b>${it.cuando ? ' · ' + esc(it.cuando) : ''}</span>${it.tag ? `<span class="etq ${it.tono || ''}">${esc(it.tag)}</span>` : ''}</div>
+      <div class="cuerpo">${heroe}<h3 class="gran">${esc(it.titulo)}</h3>
+        ${it.cita ? `<p class="cita">${esc(it.cita)}</p>` : ''}${it.sub ? `<p class="sub">${esc(it.sub)}</p>` : ''}
+        ${pasos ? `<div class="pasos">${pasos}</div>` : ''}${datos ? `<div class="datos">${datos}</div>` : ''}
+        ${it.mas ? `<details><summary>${esc(it.masTitulo || 'Ver más')}</summary><div class="mas">${it.mas}</div></details>` : ''}</div>
+      ${libre}${botones}
+    </article>
+    <div class="nav"><button data-mzgo="${esc(clave)}" data-i="${c - 1}" ${c ? '' : 'disabled'}>← Anterior</button><span class="cuenta" style="font-family:var(--m);font-size:11px;color:var(--gris)">${c + 1} de ${items.length}${hechas ? ` · ${hechas} respondida${hechas === 1 ? '' : 's'}` : ''}</span><button data-mzgo="${esc(clave)}" data-i="${c + 1}" ${c < items.length - 1 ? '' : 'disabled'}>Siguiente →</button></div>`;
+}
+const chicas = lista => lista.length ? `<div class="mazo-chico">${lista.map(t => `<span><i>✓</i>${esc(t)}</span>`).join('')}</div>` : '';
+
+// ---------- Para vos, la reunión, producto y guiones
 function abrirVista(cual, refresco) {
   const of = datos; if (!of) return;
   abierto = null; vista = cual;
+  if (!refresco) delete mazoPos[cual];
   document.querySelectorAll('.av').forEach(b => b.classList.toggle('sel', b.dataset.vista === cual));
   if (cual === 'paravos') {
     if (!refresco) enfocarPunto(MATEO.x, MATEO.z + .5, 11);
     const pend = of.pendientes || [];
     const solos = (of.arreglos || []).filter(a => a.estado === 'aplicado' && Date.now() - fecha(a.actualizado) < 3 * 86400000);
-    abrirPanel(`<h2>Para vos</h2><p class="nota">Solo lo que el equipo no puede hacer sin vos. Todo lo demás lo resuelven solos.</p>
-      <h3>Te toca</h3>${pend.map(p => {
+    const dis = token ? '' : 'disabled';
+    abrirPanel(`<h2>Para vos</h2>
+      <div class="hoy"><b>${pend.length}</b><span>${pend.length === 0 ? 'Nada pendiente: todo en orden.' : pend.length === 1 ? 'cosa que solo vos podés resolver.' : 'cosas que solo vos podés resolver.'}</span></div>
+      ${pend.map(p => {
         const e = of.empleados.find(x => x.id === p.quien) || {};
-        const botones = p.hecho_boton ? `<div class="acciones"><button class="btn primario" data-hecho="${esc(p.id)}" data-como="mandado" ${token ? '' : 'disabled'}>Ya lo mandé</button><button class="btn" data-hecho="${esc(p.id)}" data-como="no corresponde" ${token ? '' : 'disabled'}>No corresponde</button></div>`
-          : p.abre === 'reunion' ? `<div class="acciones"><button class="btn primario" data-vista="reunion">Abrir la reunión</button></div>`
-          : p.abre === 'producto' ? `<div class="acciones"><button class="btn primario" data-vista="producto">Ver las propuestas</button></div>`
-          : p.arreglo ? `<div class="acciones"><button class="btn primario" data-arreglo="${esc(p.arreglo)}" data-accion="visto" data-emp="${esc(p.quien)}" ${token ? '' : 'disabled'}>Ya lo hice</button></div>` : '';
-        return `<div class="item"><div class="meta" style="margin:0 0 4px"><a class="link" href="#${esc(p.quien)}" data-id="${esc(p.quien)}">${esc(e.nombre || p.quien)}</a></div>${esc(p.texto)}${botones}</div>`;
-      }).join('') || '<p>Nada: todo en orden.</p>'}
-      ${solos.length ? `<h3>Lo que arreglaron solos (3 días)</h3><ul>${solos.map(a => `<li><b>${esc((of.empleados.find(x => x.id === a.empleado) || {}).nombre || a.empleado)}</b>: ${esc(a.titulo)}</li>`).join('')}</ul>` : ''}
-      ${(of.hechos_recientes || []).length ? `<h3>Lo último que marcaste</h3><ul>${of.hechos_recientes.map(([id, h]) => `<li>${esc(id)}: ${esc(h.como || 'hecho')} · ${esc(hace(fecha(h.cuando)))}</li>`).join('')}</ul>` : ''}`, refresco);
+        const b = (cls, attrs, t) => `<button class="${cls}" ${attrs} ${dis}>${t}</button>`;
+        const botones = p.hecho_boton ? `<div class="resp">${b('p', `data-hecho="${esc(p.id)}" data-como="mandado"`, 'Ya lo mandé')}${b('', `data-hecho="${esc(p.id)}" data-como="no corresponde"`, 'No corresponde')}</div>`
+          : p.abre === 'reunion' ? `<div class="resp"><button class="p" data-vista="reunion">Abrir la reunión</button></div>`
+          : p.abre === 'producto' ? `<div class="resp"><button class="p" data-vista="producto">Ver las propuestas</button></div>`
+          : p.abre === 'guiones' ? `<div class="resp"><button class="p" data-vista="guiones">Ver los guiones</button></div>`
+          : p.arreglo ? `<div class="resp">${b('p', `data-arreglo="${esc(p.arreglo)}" data-accion="visto" data-emp="${esc(p.quien)}"`, 'Ya lo hice')}</div>` : '';
+        return `<div class="tarea"><span class="mini">${INICIAL[p.quien] || '·'}</span><div><small>${esc(e.nombre || p.quien)}</small><p>${esc(p.texto)}</p></div>${botones}</div>`;
+      }).join('')}
+      ${solos.length ? `<details class="resumen-sem"><summary>Lo que arreglaron solos (${solos.length})</summary><ul>${solos.map(a => `<li><b>${esc((of.empleados.find(x => x.id === a.empleado) || {}).nombre || a.empleado)}</b>: ${esc(a.titulo)}</li>`).join('')}</ul></details>` : ''}
+      ${(of.hechos_recientes || []).length ? `<details class="resumen-sem"><summary>Lo último que marcaste</summary><ul>${of.hechos_recientes.map(([id, h]) => `<li>${esc(id)}: ${esc(h.como || 'hecho')} · ${esc(hace(fecha(h.cuando)))}</li>`).join('')}</ul></details>` : ''}`, refresco, true);
     return;
   }
   if (cual === 'producto') {
     if (!refresco) enfocar('tendencias');
     const ps = of.propuestas || [];
-    const link = (u, txt) => /^https?:/.test(u || '') ? `<a class="link" href="${esc(u)}" target="_blank" rel="noopener">${esc(txt)}</a>` : esc(txt);
-    const ESTADO = {propuesta: 'Para decidir', hacerla: 'La hacemos', 'mas adelante': 'Más adelante', descartada: 'Descartada'};
+    const ESTADO = {hacerla: 'La hacemos', 'mas adelante': 'Más adelante', descartada: 'Descartada'};
+    const nuevas = ps.filter(x => (x.estado || 'propuesta') === 'propuesta');
+    const items = nuevas.map(x => ({id: x.id, ref: x, quien: 'Tendencias y producto', qid: 'tendencias', tag: 'Prenda nueva', cuando: (x.id || '').slice(8, 10) + '/' + (x.id || '').slice(5, 7),
+      titulo: x.prenda, sub: x.idea, fotos: x.fotos || [], chips: [['Precio sugerido', x.precio_sugerido], ['Costo estimado', x.costo_estimado], ['Lanzamiento', x.lanzamiento_sugerido]],
+      masTitulo: 'Ver corte, tela, proveedores y riesgos', mas: `<span>Inspirada en: ${(x.inspirada_en || []).map(r => linkA(r.link, r.marca)).join(', ') || '—'}</span>
+        <span>Corte: ${esc(x.corte)} · Tela: ${esc(x.tela)}</span><span>Colores: ${esc((x.colores || []).join(', '))}</span><span>Detalles: ${esc((x.detalles || []).join(' · '))}</span>
+        ${(x.proveedores || []).length ? `<span>Proveedores: ${x.proveedores.map(v => linkA(v.contacto, v.nombre)).join(', ')}</span>` : ''}
+        ${x.riesgos ? `<span>Riesgos: ${esc(x.riesgos)}</span>` : ''}${x.marketing ? `<span><b>Cómo lo lanzaríamos:</b> ${esc(x.marketing)}</span>` : ''}
+        ${x.diseno ? `<span><button class="btn" data-pieza="${esc(x.diseno)}">Ver la lámina</button></span>` : ''}
+        <textarea id="n-${esc(x.id)}" placeholder="¿Algo para cambiarle? (opcional)" style="min-height:44px;margin-top:6px"></textarea>`,
+      ops: [{t: 'La hacemos', v: 'hacerla'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'Descartar', v: 'descartada'}]}));
     const tend = of.empleados.find(e => e.id === 'tendencias') || {};
-    abrirPanel(`<h2>Próximos lanzamientos</h2><p class="nota">Las propone Tendencias y producto a partir de tus referencias; Diseño las dibuja y Marketing dice cómo las lanzaría. Vos decidís.</p>
-      ${ps.map(x => { const est = x.estado || 'propuesta';
-        return `<div class="item"><div class="meta" style="margin:0 0 4px">${esc(ESTADO[est] || est)} · ${esc((x.id || '').slice(8, 10) + '/' + (x.id || '').slice(5, 7))}</div><b style="font-size:16px">${esc(x.prenda)}</b>
-        <p style="margin:6px 0;font-size:14px;line-height:1.45">${esc(x.idea)}</p>
-        <div class="meta"><span>Inspirada en: ${(x.inspirada_en || []).map(r => link(r.link, r.marca)).join(', ') || '—'}</span>
-          <span>Corte: ${esc(x.corte)} · Tela: ${esc(x.tela)}</span><span>Colores: ${esc((x.colores || []).join(', '))}</span>
-          <span>Detalles: ${esc((x.detalles || []).join(' · '))}</span>
-          <span>Costo estimado: ${esc(x.costo_estimado)} · Precio sugerido: ${esc(x.precio_sugerido)}</span>
-          <span>Lanzamiento sugerido: ${esc(x.lanzamiento_sugerido)}</span>
-          ${(x.proveedores || []).length ? `<span>Proveedores: ${x.proveedores.map(v => link(v.contacto, v.nombre)).join(', ')}</span>` : ''}
-          ${x.riesgos ? `<span>Riesgos: ${esc(x.riesgos)}</span>` : ''}
-          ${x.marketing ? `<span><b>Marketing:</b> ${esc(x.marketing)}</span>` : ''}</div>
-        ${(x.fotos || []).length ? `<div class="fotos">${x.fotos.map(f => `<img data-foto="${esc(f)}" alt="${esc(x.prenda)}" loading="lazy">`).join('')}</div>` : ''}
-        <div class="acciones">${x.diseno ? `<button class="btn" data-pieza="${esc(x.diseno)}">Ver la lámina</button>` : '<span class="nota" style="margin:0">Diseño la dibuja en su próximo turno.</span>'}${(x.fotos || []).length ? '' : '<span class="nota" style="margin:0">Las fotos realistas salen con el próximo turno de Diseño.</span>'}</div>
-        ${est === 'propuesta' ? `<textarea id="n-${esc(x.id)}" placeholder="¿Algo para cambiarle? (opcional)" style="min-height:44px;margin-top:8px"></textarea>
-        <div class="acciones">${[['hacerla', 'La hacemos'], ['mas adelante', 'Más adelante'], ['descartada', 'Descartar']].map(([k, t], i) => `<button class="btn${i ? '' : ' primario'}" data-propuesta="${esc(x.archivo)}" data-decision="${k}" data-pid="${esc(x.id)}" ${token ? '' : 'disabled'}>${t}</button>`).join('')}</div>`
-          : x.nota_mateo ? `<div class="nota">Tu nota: ${esc(x.nota_mateo)}</div>` : ''}</div>`; }).join('')
-        || `<p class="res">Todavía no hay propuestas. Tendencias arma las primeras ${esc(tend.proximo ? en(fecha(tend.proximo)) : 'pronto')} (${esc((tend.horario || '').toLowerCase())}).</p>`}
-      <h3>Tus referencias</h3><p class="nota">Están en contexto/referencias-producto.md. Para sumar una, dejásela como tema a la Jefa o pedímela.</p>`, refresco);
+    abrirPanel(`<div class="cab2"><h2>Próximos lanzamientos</h2></div>
+      ${items.length ? mazoHTML('producto', items) : `<p class="res">${ps.length ? 'No queda nada por decidir.' : `Todavía no hay propuestas. Tendencias arma las primeras ${esc(tend.proximo ? en(fecha(tend.proximo)) : 'pronto')}.`}</p>`}
+      ${chicas(ps.filter(x => x.estado && x.estado !== 'propuesta').map(x => `${x.prenda} · ${ESTADO[x.estado] || x.estado}`))}`, refresco, true);
     cargarFotos();
+    return;
+  }
+  if (cual === 'guiones') {
+    if (!refresco) enfocar('guion');
+    const gs = of.guiones || [];
+    const ESTADO = {va: 'Va', 'mas adelante': 'Más adelante', descartado: 'No'};
+    const nuevos = gs.filter(g => (g.estado || 'propuesta') === 'propuesta');
+    const items = nuevos.map(g => { const ia = g.tipo === 'ia';
+      return {id: g.archivo, ref: g, quien: 'Guionista', qid: 'guion', tag: ia ? 'IA · Higgsfield' : 'Para grabar', tono: ia ? 'ia' : 'rodaje', cuando: (g.archivo || '').slice(15, 17) + '/' + (g.archivo || '').slice(12, 14),
+        titulo: g.titulo, cita: g.gancho, sub: g.escena, pasos: g.beats || [],
+        chips: [['Prendas', (g.prendas || []).join(', ')], ['Dónde', g.lugar], [ia ? 'Personaje' : 'Quién actúa', g.personaje]],
+        masTitulo: ia ? 'Ver por qué, referente y prompt' : 'Ver por qué, referente y qué hace falta',
+        mas: `${g.texto_en_pantalla ? `<span><b>Texto en pantalla:</b> ${esc(g.texto_en_pantalla)}</span>` : ''}${g.por_que ? `<span><b>Por qué:</b> ${esc(g.por_que)}</span>` : ''}
+          ${g.referente ? `<span><b>Referente:</b> ${esc(String(g.referente).replace(/https?:\/\/\S+/, '').trim())} ${linkA((String(g.referente).match(/https?:\/\/\S+/) || [''])[0], 'ver')}</span>` : ''}
+          ${g.que_hace_falta ? `<span><b>Hace falta:</b> ${esc(g.que_hace_falta)}</span>` : ''}${g.prompt ? `<span><b>Prompt:</b></span><pre>${esc(g.prompt)}</pre>` : ''}`,
+        ops: [{t: 'Va', v: 'va'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'No', v: 'descartado'}]}; });
+    const hechos = gs.filter(g => g.estado && g.estado !== 'propuesta');
+    const gua = of.empleados.find(e => e.id === 'guion') || {};
+    abrirPanel(`<div class="cab2"><h2>Guiones de reels</h2></div>
+      ${items.length ? mazoHTML('guiones', items) : `<p class="res">${gs.length ? 'No queda ningún guion por decidir. El Guionista sigue armando.' : `Todavía no hay guiones. El Guionista arma los primeros ${esc(gua.proximo ? en(fecha(gua.proximo)) : 'pronto')}.`}</p>`}
+      ${hechos.length ? `<h3>Ya decididos</h3>${chicas(hechos.map(g => `${g.titulo} (${g.tipo === 'ia' ? 'IA' : 'rodaje'}) · ${ESTADO[g.estado] || g.estado}`))}` : ''}`, refresco, true);
     return;
   }
   // la reunión semanal
@@ -1023,33 +1139,52 @@ function abrirVista(cual, refresco) {
   if (!r) {
     const jefa = of.empleados.find(e => e.id === 'jefa');
     abrirPanel(`<h2>Reunión semanal</h2><p class="res">Todavía no hubo ninguna. La Jefa arma la primera ${esc(jefa ? en(fecha(jefa.proximo)) : 'pronto')}.</p>
-      ${temaHTML()}<div class="acciones"><button class="btn" id="b-reunion-ya" ${token ? '' : 'disabled'}>Armar la reunión ahora</button></div><div class="nota">Usa Claude (Sonnet): unos minutos de tu cuota.</div>`, refresco);
+      ${temaHTML()}<div class="acciones"><button class="btn" id="b-reunion-ya" ${token ? '' : 'disabled'}>Armar la reunión ahora</button></div><div class="nota">Usa Claude (Sonnet): unos minutos de tu cuota.</div>`, refresco, true);
     conectarTema(); if ($('#b-reunion-ya')) $('#b-reunion-ya').onclick = reunionYa;
     return;
   }
   const resp = Object.assign({}, r.respuestas || {}, borrador.respuestas), dec = Object.assign({}, r.decisiones || {}, borrador.decisiones);
   const N = id => ((of.empleados.find(e => e.id === id) || {}).nombre || id);
-  abrirPanel(`<h2>Reunión del ${esc(r.fecha.slice(8, 10))}/${esc(r.fecha.slice(5, 7))}</h2>
-    <p class="res">${esc(r.resumen)}</p>
-    ${(r.preguntas || []).length ? `<h3>Preguntas para vos</h3>${r.preguntas.map(p => `<div class="item"><div class="meta" style="margin:0 0 4px">${esc(N(p.quien))}</div><b>${esc(p.texto)}</b>
-      ${p.por_que ? `<div class="meta">${esc(p.por_que)}</div>` : ''}
-      ${(p.opciones || []).length ? `<div class="opciones">${p.opciones.map(o => `<button data-preg="${esc(p.id)}" data-op="${esc(o)}" class="${resp[p.id] === o ? 'si' : ''}">${esc(o)}</button>`).join('')}</div>` : ''}
-      <textarea id="r-${esc(p.id)}" data-resp="${esc(p.id)}" placeholder="Tu respuesta" style="min-height:52px;margin-top:6px">${esc((p.opciones || []).includes(resp[p.id]) ? '' : resp[p.id] || '')}</textarea></div>`).join('')}` : ''}
-    ${(r.ideas || []).length ? `<h3>Ideas (filtradas por la Jefa)</h3>${r.ideas.map(i => { const d = dec[i.id]; const dd = typeof d === 'string' ? d : d && d.decision;
-      return `<div class="item"><b>${esc(i.titulo)}</b><div class="meta"><span>De: ${esc(N(i.quien))} · Fuente: ${/^https?:/.test(i.fuente || '') ? `<a class="link" href="${esc(i.fuente)}" target="_blank" rel="noopener">${esc(i.fuente.replace(/^https?:\/\/(www\.)?/, '').slice(0, 48))}</a>` : esc(i.fuente)}</span>
-        <span>Costo: ${esc(i.costo)}</span><span>Qué esperamos: ${esc(i.esperado)}</span><span>Cómo se mide: ${esc(i.medida)}</span></div>
-        <div class="opciones">${['Aprobada', 'Más adelante', 'Descartada'].map(o => `<button data-idea="${esc(i.id)}" data-op="${o}" class="${dd === o ? 'si' : ''}">${o}</button>`).join('')}</div></div>`; }).join('')}` : ''}
-    <div class="acciones"><button class="btn primario" id="b-respuestas" ${token ? '' : 'disabled'}>Guardar respuestas</button><span class="nota" style="margin:0">El equipo las lee en su próximo turno.</span></div>
-    ${(r.temas_de_mateo || []).length ? `<h3>Tus temas</h3>${r.temas_de_mateo.map(t => `<div class="item"><b>${esc(t.tema)}</b><div class="meta">${esc(t.respuesta)}</div></div>`).join('')}` : ''}
-    <h3>Qué hizo cada uno</h3>${(r.equipo || []).map(x => `<div class="item"><b>${esc(N(x.empleado))}</b><div class="meta"><span>${esc(x.hizo)}</span><span>Sigue: ${esc(x.sigue)}</span></div></div>`).join('')}
-    ${(r.descartadas || []).length ? `<h3>Ideas que la Jefa descartó</h3><ul>${r.descartadas.map(d => `<li>${esc(d.titulo)}: <span class="nota">${esc(d.motivo)}</span></li>`).join('')}</ul>` : ''}
-    ${temaHTML()}
-    <p class="nota">${r.uso ? `Esta reunión usó ${esc(String(r.uso.minutos).replace('.', ','))} min de Claude (Sonnet).` : ''}</p>`, refresco);
-  document.querySelectorAll('[data-preg]').forEach(b => { b.onclick = () => { borrador.respuestas[b.dataset.preg] = b.dataset.op; const t = $('#r-' + b.dataset.preg); if (t) t.value = ''; abrirVista('reunion', true); }; });
-  document.querySelectorAll('[data-idea]').forEach(b => { b.onclick = () => { borrador.decisiones[b.dataset.idea] = b.dataset.op; abrirVista('reunion', true); }; });
-  document.querySelectorAll('[data-resp]').forEach(t => { t.oninput = () => { if (t.value.trim()) borrador.respuestas[t.dataset.resp] = t.value; }; });
+  const items = [
+    ...(r.preguntas || []).map(p => ({k: 'p', id: p.id, quien: N(p.quien), qid: p.quien, tag: 'Pregunta', titulo: p.texto, sub: p.por_que, ops: (p.opciones || []).map(o => ({t: o, v: o})), libre: true, valor: String(resp[p.id] || '').trim() || null})),
+    ...(r.ideas || []).map(i => { const d = dec[i.id], dd = typeof d === 'string' ? d : d && d.decision;
+      return {k: 'i', id: i.id, quien: N(i.quien), qid: i.quien, tag: 'Idea', titulo: i.titulo, chips: [['Costo', i.costo], ['Qué esperamos', i.esperado], ['Cómo se mide', i.medida]],
+        masTitulo: 'Ver la fuente', mas: i.fuente ? `<span>Fuente: ${linkA(i.fuente, String(i.fuente).replace(/^https?:\/\/(www\.)?/, '').slice(0, 56))}</span>` : '',
+        ops: ['Aprobada', 'Más adelante', 'Descartada'].map(o => ({t: o, v: o})), valor: dd || null}; })];
+  const sinGuardar = Object.keys(borrador.respuestas).length + Object.keys(borrador.decisiones).length;
+  const pend = items.filter(i => !i.valor).length;
+  abrirPanel(`<div class="cab2"><h2>Reunión del ${esc(r.fecha.slice(8, 10))}/${esc(r.fecha.slice(5, 7))}</h2><span class="cuenta">${pend ? `${pend} por responder` : 'todo respondido'}</span></div>
+    ${items.length ? mazoHTML('reunion', items) : '<p class="res">Esta semana no hay nada para decidir.</p>'}
+    <div class="guardar"><button class="btn primario" id="b-respuestas" ${token && sinGuardar ? '' : 'disabled'}>${sinGuardar ? `Guardar ${sinGuardar} respuesta${sinGuardar === 1 ? '' : 's'}` : 'Nada nuevo para guardar'}</button></div>
+    <details class="resumen-sem"><summary>Resumen de la semana y qué hizo cada uno</summary>
+      <p class="res">${esc(r.resumen)}</p>
+      ${(r.equipo || []).map(x => `<div class="item"><b>${esc(N(x.empleado))}</b><div class="meta"><span>${esc(x.hizo)}</span><span>Sigue: ${esc(x.sigue)}</span></div></div>`).join('')}
+      ${(r.temas_de_mateo || []).length ? `<h3>Tus temas</h3>${r.temas_de_mateo.map(t => `<div class="item"><b>${esc(t.tema)}</b><div class="meta">${esc(t.respuesta)}</div></div>`).join('')}` : ''}
+      ${(r.descartadas || []).length ? `<h3>Ideas que la Jefa descartó</h3><ul>${r.descartadas.map(d => `<li>${esc(d.titulo)}: <span class="nota">${esc(d.motivo)}</span></li>`).join('')}</ul>` : ''}
+      <p class="nota">${r.uso ? `Esta reunión usó ${esc(String(r.uso.minutos).replace('.', ','))} min de Claude (Sonnet).` : ''}</p></details>
+    <details class="resumen-sem"><summary>Dejale un tema a la Jefa</summary><textarea id="t-tema" placeholder="Una pregunta o un tema para la próxima reunión…"></textarea>
+      <div class="acciones"><button class="btn" id="b-tema" ${token ? '' : 'disabled'}>Anotar para la reunión</button></div></details>`, refresco, true);
   $('#b-respuestas').onclick = guardarRespuestas;
   conectarTema();
+}
+ELEGIR.reunion = (it, op) => {
+  (it.k === 'p' ? borrador.respuestas : borrador.decisiones)[it.id] = op.v;
+  const t = document.getElementById('lib-reunion-' + it.id); if (t) t.value = '';
+  avanzar('reunion'); abrirVista('reunion', true);
+};
+LIBRE.reunion = (it, txt) => { borrador.respuestas[it.id] = txt; avanzar('reunion'); abrirVista('reunion', true); };
+ELEGIR.producto = (it, op) => { avanzar('producto', true); decidirPropuesta(it.ref.archivo, op.v, it.ref.id); };
+ELEGIR.guiones = (it, op) => { avanzar('guiones', true); decidirGuion(it.ref.archivo, op.v, it.ref.titulo); };
+async function decidirGuion(archivo, decision, titulo) {
+  try {
+    await cambiarJSON(archivo, d => { d.estado = decision; d.decidido = new Date().toISOString().slice(0, 16); }, `Oficina: guion "${titulo}" → ${decision}`);
+    const g = (datos.guiones || []).find(y => y.archivo === archivo);
+    if (g) g.estado = decision;
+    const quedan = (datos.guiones || []).filter(y => (y.estado || 'propuesta') === 'propuesta').length;
+    if (!quedan) datos.pendientes = (datos.pendientes || []).filter(p => p.id !== 'guiones');
+    toast(decision === 'va' ? 'Va. Contenido IA lo prepara (o queda en la lista de rodaje).' : decision === 'descartado' ? 'Descartado: el Guionista aprende de esto.' : 'Anotado para más adelante.');
+    pintar();
+  } catch (err) { toast('No se pudo guardar: ' + err.message); }
 }
 const borrador = {respuestas: {}, decisiones: {}};
 const temaHTML = () => `<h3>Dejale un tema a la Jefa</h3><textarea id="t-tema" placeholder="Una pregunta o un tema para la próxima reunión…"></textarea>
@@ -1129,6 +1264,7 @@ function abrir(id, refresco) {
     <div class="nota">Ahora: ${esc(e.horario)}. Próximo turno: ${e.proximo ? esc(en(fecha(e.proximo))) : 'en pausa'}.${e.id === 'jefa' || CON_IA.includes(e.id) ? ' Usa Claude (Sonnet): más seguido = más cuota.' : ' Sin IA: no gasta cuota de Claude.'}</div>`;
   const extra = e.id === 'jefa' ? `<div class="acciones"><button class="btn primario" data-vista="reunion">${of.reunion ? 'Ver la reunión' : 'Reunión semanal'}</button></div>${temaHTML()}`
     : e.id === 'ventas' && pendientesDe('ventas').some(p => p.hecho_boton) ? `<div class="acciones"><button class="btn primario" data-vista="paravos">Ver lo que hay que mandar</button></div>`
+    : e.id === 'guion' ? `<div class="acciones"><button class="btn primario" data-vista="guiones">Ver los guiones</button></div>` + trabajoIA(e)
     : CON_IA.includes(e.id) ? trabajoIA(e) : '';
   abrirPanel(`<div class="cab"><span class="cara">${INICIAL[e.id]}<span class="pt" style="background:${COLOR[st]}"></span></span>
       <div><h2>${esc(e.nombre)}</h2><div class="puesto">${esc(e.puesto.toUpperCase())}</div></div></div>
@@ -1290,6 +1426,12 @@ function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add
 
 // ================= eventos
 document.addEventListener('click', ev => {
+  const mz = ev.target.closest('[data-mz]');
+  if (mz) { const cl = mz.dataset.mz, it = (mazoItems[cl] || [])[mazoPos[cl] || 0]; return it && ELEGIR[cl](it, it.ops[+mz.dataset.k]); }
+  const ml = ev.target.closest('[data-mzlibre]');
+  if (ml) { const cl = ml.dataset.mzlibre, it = (mazoItems[cl] || [])[mazoPos[cl] || 0], t = it && document.getElementById('lib-' + cl + '-' + it.id); if (!t || !t.value.trim()) return toast('Escribí tu respuesta primero.'); return LIBRE[cl](it, t.value.trim()); }
+  const mg = ev.target.closest('[data-mzgo]');
+  if (mg && !mg.disabled) { mazoPos[mg.dataset.mzgo] = +mg.dataset.i; return abrirVista(mg.dataset.mzgo, true); }
   const pr = ev.target.closest('[data-propuesta]');
   if (pr) return decidirPropuesta(pr.dataset.propuesta, pr.dataset.decision, pr.dataset.pid);
   const fo = ev.target.closest('img[data-foto]');
@@ -1307,7 +1449,7 @@ document.addEventListener('click', ev => {
 });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !cerrarVisor()) cerrar(); });
 $('#visor-volver').onclick = () => cerrarVisor();
-addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos', 'producto'].includes(id) ? abrirVista(id) : abrir(id); });
+addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos', 'producto', 'guiones'].includes(id) ? abrirVista(id) : abrir(id); });
 $('#velo').onclick = cerrar;
 $('#paravos').onclick = () => abrirVista('paravos');
 $('#b-vista').onclick = () => { cerrar(); vistaGeneral(); };
