@@ -274,6 +274,7 @@ body.con-panel #resumen{opacity:0;pointer-events:none}
 <div class="velo" id="velo"></div>
 <aside class="panel" id="panel" aria-live="polite"></aside>
 <div class="toast" id="toast" role="status"></div>
+<div id="fallo" style="display:none;position:fixed;left:12px;bottom:96px;z-index:10;max-width:min(520px,calc(100vw - 24px));background:#B5462F;color:#fff;border-radius:4px;padding:10px 14px;font:12px/1.4 var(--m);box-shadow:var(--sombra)"></div>
 <div id="visor" role="dialog" aria-label="Diseño"><button class="btn" id="visor-volver">← Volver a la oficina</button><div id="visor-cuerpo"></div></div>
 
 <script type="module">
@@ -291,6 +292,9 @@ const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const guardado = (k, v) => { try { if (v === undefined) return localStorage.getItem(k) || ''; v ? localStorage.setItem(k, v) : localStorage.removeItem(k); } catch (e) { return ''; } };
 
+const avisarFallo = m => { const el = document.getElementById('fallo'); if (el) { el.textContent = 'Error en la oficina: ' + m; el.style.display = 'block'; } };
+addEventListener('error', ev => avisarFallo((ev.message || 'desconocido') + (ev.lineno ? ' (línea ' + ev.lineno + ')' : '')));
+addEventListener('unhandledrejection', ev => avisarFallo(String(ev.reason && ev.reason.message || ev.reason)));
 let token = guardado('groso_oficina_token');
 let datos = window.DATOS || null, corridas = [], fuente = window.DATOS ? 'copia local' : '', pausado = null;
 let abierto = null, vista = null, desdeLink = decodeURIComponent(location.hash.slice(1)) || null;
@@ -668,8 +672,8 @@ function sillon(padre, x, z, rotY = 0) {
 
 // ---------- lugares: dónde se sienta cada uno [x, z, mira hacia (rotY)]
 // dos filas: adelante los de la fase 1 y Marketing; atrás los que investigan y crean (miran hacia adelante)
-const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [.8, -1.2], ventas: [4.0, -1.2], marketing: [7.2, -1.2], influencers: [10.4, -1.2],
-  competencia: [-2.4, -6.0], tendencias: [.2, -6.0], diseno: [2.8, -6.0], guion: [5.4, -6.0], contenido: [8.0, -6.0], desarrollo: [10.6, -6.0]};
+const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [.16, -1.2], ventas: [2.72, -1.2], marketing: [5.28, -1.2], influencers: [7.84, -1.2], guion: [10.4, -1.2],
+  competencia: [-2.4, -6.0], tendencias: [.16, -6.0], diseno: [2.72, -6.0], contenido: [5.28, -6.0], desarrollo: [7.84, -6.0]};
 const PROXIMOS = [];  // escritorios vacíos con cartel (hoy no queda ninguno)
 const MESA = {x: -9.6, z: -5.6};
 // la mesa tiene 11 lugares: las dos cabeceras, cuatro de un lado y cinco del otro
@@ -1014,9 +1018,10 @@ function pintar() {
   $('#cargando').classList.add('oculto');
   const of = datos;
   $('#sub').textContent = `estado de ${hace(fecha(of.actualizado))} · ${fuente}`;
-  if (!construida) { construir(of); construida = true; }
-  aplicarEstados(of);
-  pintarTele(of);
+  const seguro = (nombre, f) => { try { f(); } catch (err) { console.error(nombre, err); avisarFallo(nombre + ': ' + err.message); } };
+  if (!construida) seguro('escena', () => { construir(of); construida = true; });
+  seguro('estados', () => aplicarEstados(of));
+  seguro('tele', () => pintarTele(of));
   const total = (of.pendientes || []).length;
   $('#paravos').style.display = total ? 'inline-flex' : 'none';
   $('#paravos').querySelector('b').textContent = total;
