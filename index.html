@@ -212,6 +212,38 @@ button,textarea,input,select{font:inherit;color:inherit}
 .hecha small{display:block;font-family:var(--m);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--gris)}
 .hecha b{display:block;font-size:14px;font-weight:600;line-height:1.3;margin:2px 0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .hecha span{font-size:13px;color:var(--ok);font-weight:500}
+body.en-juego #dock,body.en-juego #resumen,body.en-juego #paravos{display:none}
+#juego{position:fixed;left:0;right:0;bottom:0;z-index:7;display:none;padding:0 12px max(12px,env(safe-area-inset-bottom));pointer-events:none}
+#juego.abierto{display:block}
+.escena{pointer-events:auto;max-width:800px;margin:46px auto 0;background:rgba(26,26,26,.97);color:var(--tiza);border-radius:10px;padding:0 20px 14px;box-shadow:0 -10px 40px rgba(0,0,0,.4);border:1px solid #3A3936;animation:sube .25s ease-out}
+@keyframes sube{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+.escena .quien{display:flex;align-items:flex-end;gap:12px;margin-top:-34px}
+.escena .retrato{width:68px;height:68px;border-radius:50%;background:var(--tiza);color:var(--grafito);border:3px solid var(--grafito);display:grid;place-items:center;font-family:var(--d);font-size:21px;box-shadow:0 6px 18px rgba(0,0,0,.45);flex:none}
+.escena .nom{display:inline-block;background:var(--tiza);color:var(--grafito);padding:3px 11px;border-radius:3px;font-weight:600;font-size:13.5px}
+.escena .rol{font-family:var(--m);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#9B9A94;margin:3px 0 4px}
+.escena .texto{font-size:19px;line-height:1.4;margin:14px 0 12px;min-height:2.8em;cursor:pointer}
+.escena .fichas{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;margin:0 0 12px}
+.escena .fichas div{background:#2E2E2C;border-radius:5px;padding:7px 10px;font-size:13px;line-height:1.3}
+.escena .fichas small{display:block;font-family:var(--m);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9B9A94;margin-bottom:2px}
+.escena .opc{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.escena .opc button{background:var(--tiza);color:var(--grafito);border:0;border-radius:6px;padding:15px 10px;font-weight:600;font-size:15px;cursor:pointer;line-height:1.2;transition:transform .1s,background .15s}
+.escena .opc button:hover{background:#fff;transform:translateY(-2px)}
+.escena .opc button.sec{background:transparent;color:#D8D6CF;border:1px solid #5A5A55;font-weight:500;font-size:13.5px}
+.escena textarea{width:100%;min-height:64px;border:1px solid #5A5A55;border-radius:6px;background:#2E2E2C;color:var(--tiza);padding:10px;font-size:15px;resize:vertical}
+.escena .pie{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-family:var(--m);font-size:11px;color:#9B9A94}
+.escena .pie button{background:none;border:0;color:#B9B7B0;cursor:pointer;font-size:12px;padding:4px 6px;font-family:var(--t)}
+.escena .barrita{height:3px;background:#3A3936;border-radius:2px;margin:0 -20px 0;overflow:hidden;border-radius:10px 10px 0 0}
+.escena .barrita span{display:block;height:100%;background:var(--ok);transition:width .3s}
+.recap{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 12px}
+.recap div{background:#2E2E2C;border-radius:6px;padding:10px;text-align:center}
+.recap b{display:block;font-family:var(--d);font-weight:400;font-size:24px}
+.recap small{font-family:var(--m);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:#9B9A94}
+.mision{background:var(--grafito);color:var(--tiza);border-radius:4px;padding:12px 13px;margin-bottom:12px}
+.mision small{font-family:var(--m);font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#9B9A94}
+.mision .et{font-family:var(--d);font-size:13px;letter-spacing:.05em;margin:3px 0 9px}
+.mision .meta{margin:7px 0}.mision .meta div{display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px}
+.mision .barra{height:6px;background:#3A3936;border-radius:3px;overflow:hidden}.mision .barra span{display:block;height:100%;background:#E3BC98;border-radius:3px}
+.mision .pie{font-size:11.5px;color:#B9B7B0;margin-top:8px}
 #conectar{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:min(470px,calc(100vw - 24px));padding:22px;z-index:6;display:none;background:var(--tiza);border:1px solid var(--linea);border-radius:4px;box-shadow:var(--sombra)}
 #conectar h2{font-family:var(--d);font-weight:400;font-size:16px;letter-spacing:.06em;margin:0 0 8px}
 #conectar ol{padding-left:20px;margin:8px 0;font-size:14px;line-height:1.5}
@@ -280,6 +312,7 @@ body.con-panel #resumen{opacity:0;pointer-events:none}
   <div class="acciones"><button class="btn primario" id="b-guardar">Conectar</button><button class="btn" id="b-cancelar">Cancelar</button></div>
 </div>
 
+<div id="juego" aria-live="polite"></div>
 <div class="velo" id="velo"></div>
 <aside class="panel" id="panel" aria-live="polite"></aside>
 <div class="toast" id="toast" role="status"></div>
@@ -306,6 +339,7 @@ addEventListener('error', ev => avisarFallo((ev.message || 'desconocido') + (ev.
 addEventListener('unhandledrejection', ev => avisarFallo(String(ev.reason && ev.reason.message || ev.reason)));
 let token = guardado('groso_oficina_token');
 let datos = window.DATOS || null, corridas = [], fuente = window.DATOS ? 'copia local' : '', pausado = null;
+let enJuego = null, forzarMesa = false;
 let abierto = null, vista = null, desdeLink = decodeURIComponent(location.hash.slice(1)) || null;
 
 // ================= GitHub
@@ -893,7 +927,7 @@ function aplicarEstados(of) {
     const meNecesita = pendientesDe(e.id).length > 0 && st !== 'trabajando';
     if (!meNecesita) delete sillaMateo[e.id];
     else if (!(e.id in sillaMateo)) { const libre = CON_MATEO.findIndex((_, i) => !Object.values(sillaMateo).includes(i)); if (libre >= 0) sillaMateo[e.id] = libre; }
-    ubicar(e.id, of.pausa ? 'escritorio' : reu ? 'mesa' : e.id in sillaMateo ? 'mateo' : 'escritorio');
+    ubicar(e.id, of.pausa ? 'escritorio' : (reu || forzarMesa) ? 'mesa' : e.id in sillaMateo ? 'mateo' : 'escritorio');
     const globo = document.querySelector(`.chip[data-id="${e.id}"] .globo`);
     if (!globo) continue;
     globo.className = 'globo' + ({aviso: ' ojo', falla: ' falla', ok: ' ok', descanso: ' zz', pausa: ' zz'}[st] || '');
@@ -1050,7 +1084,14 @@ function pintar() {
   $('#paravos').querySelector('span').textContent = total === 1 ? 'Te toca 1 cosa' : `Te tocan ${total} cosas`;
   const n = of.numeros || {}, u = of.uso || {};
   const dias = n.lanzamiento ? Math.ceil((new Date(n.lanzamiento + 'T00:00:00-03:00') - Date.now()) / 86400000) : null;
-  $('#resumen').innerHTML = `<h2>Esta semana</h2>
+  const mc = n.marca || {}, hoyISO = new Date().toISOString().slice(0, 10);
+  const ETAPAS = [{n: 0, nombre: 'Los cimientos', hasta: '2026-11-26', metas: [['Seguidores', 'seguidores_ig', 300], ['Anotados en la lista', 'anotados_lista', 150]]},
+    {n: 1, nombre: 'Lanzamiento', hasta: '2026-12-31', metas: [['Seguidores', 'seguidores_ig', 1500], ['Pedidos', 'pedidos', 100]]}];
+  const et = ETAPAS.find(x => hoyISO <= x.hasta);
+  const mision = et ? `<div class="mision"><small>Etapa ${et.n} del plan</small><div class="et">${esc(et.nombre.toUpperCase())}</div>${et.metas.map(([t, k, meta]) => { const v = Number(mc[k]) || 0;
+    return `<div class="meta"><div><span>${esc(t)}</span><span>${v} / ${meta}</span></div><div class="barra"><span style="width:${Math.min(100, Math.round(v / meta * 100))}%"></span></div></div>`; }).join('')}
+    <div class="pie">${dias != null && dias >= 0 ? `Faltan ${dias} días para el lanzamiento · ` : ''}${n.decisiones || 0} decisiones tomadas${mc.fecha ? ` · números del ${esc(String(mc.fecha).slice(8, 10))}/${esc(String(mc.fecha).slice(5, 7))}` : ''}</div></div>` : '';
+  $('#resumen').innerHTML = `${mision}<h2>Esta semana</h2>
     <div class="num"><div><small>Pedidos</small><b>${n.pedidos_semana ?? '—'}</b></div><div><small>Ventas</small><b>${n.ventas_semana != null ? plata(n.ventas_semana) : '—'}</b></div>
     <div><small>Socios</small><b>${n.socios ?? '—'}</b></div><div><small>${dias != null && dias >= 0 ? 'Lanzamiento' : 'Velocidad'}</small><b>${dias != null && dias >= 0 ? dias + ' d' : (n.velocidad ?? '—')}</b></div></div>
     <h2>El equipo</h2>${of.empleados.map(e => { const st = estadoReal(e); return `<div class="fila"><i style="background:${COLOR[st]}"></i><div><b style="font-weight:500">${esc(e.nombre)}</b> · ${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'trabajando ahora' : e.resumen.length > 90 ? e.resumen.slice(0, 88) + '…' : e.resumen)}</div></div>`; }).join('')}
@@ -1064,7 +1105,8 @@ function pintar() {
     <button class="av txt${vista === 'producto' ? ' sel' : ''}" data-vista="producto"><span class="cara">P${(of.propuestas || []).filter(x => (x.estado || 'propuesta') === 'propuesta').length ? `<b>${of.propuestas.filter(x => (x.estado || 'propuesta') === 'propuesta').length}</b>` : ''}</span><small>Producto</small></button>
     <button class="av txt${vista === 'guiones' ? ' sel' : ''}" data-vista="guiones"><span class="cara">G${nGuiones ? `<b>${nGuiones}</b>` : ''}</span><small>Guiones</small></button>
     <button class="av txt${vista === 'paravos' ? ' sel' : ''}" data-vista="paravos"><span class="cara">!${total ? `<b>${total}</b>` : ''}</span><small>Para vos</small></button>`;
-  if (abierto) abrir(abierto, true);
+  if (enJuego) { /* en plena reunión: no se pisa la escena */ }
+  else if (abierto) abrir(abierto, true);
   else if (vista) abrirVista(vista, true);
   else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos', 'producto', 'guiones'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
 }
@@ -1115,9 +1157,107 @@ function mazoHTML(clave, items) {
 }
 const chicas = lista => lista.length ? `<div class="mazo-chico">${lista.map(t => `<span><i>✓</i>${esc(t)}</span>`).join('')}</div>` : '';
 
+
+// ================= modo juego: la reunión como una conversación, con las mismas decisiones de siempre
+const corto = (t, n) => { t = String(t || '').replace(/\s+/g, ' ').trim(); return t.length > n ? t.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : t; };
+function escenasDe(clave) {
+  const of = datos, N = id => ((of.empleados.find(e => e.id === id) || {}).nombre || id), sc = [];
+  const cierre = (qid, texto) => sc.push({qid, tipo: 'cierre', texto});
+  if (clave === 'reunion') {
+    const r = of.reunion; if (!r) return [];
+    const resp = Object.assign({}, r.respuestas || {}, borrador.respuestas), dec = Object.assign({}, r.decisiones || {}, borrador.decisiones);
+    const pend = [
+      ...(r.preguntas || []).filter(p => !String(resp[p.id] || '').trim()).map(p => ({k: 'p', id: p.id, qid: p.quien, texto: p.texto, sub: p.por_que, ops: (p.opciones || []).map(o => ({t: o, v: o})), libre: true})),
+      ...(r.ideas || []).filter(i => !dec[i.id]).map(i => ({k: 'i', id: i.id, qid: i.quien, texto: 'Te propongo: ' + i.titulo, fichas: [['Costo', i.costo], ['Qué esperamos', i.esperado], ['Cómo se mide', i.medida]], ops: ['Aprobada', 'Más adelante', 'Descartada'].map(o => ({t: o, v: o}))}))];
+    if (!pend.length) return [];
+    sc.push({qid: 'jefa', tipo: 'dice', texto: `Buenas, Mateo. Reunión del ${r.fecha.slice(8, 10)}/${r.fecha.slice(5, 7)}. ${corto(r.resumen, 230)} Tengo ${pend.length} ${pend.length === 1 ? 'cosa' : 'cosas'} para que decidas.`});
+    const habló = new Set();
+    for (const it of pend) {
+      const x = (r.equipo || []).find(y => y.empleado === it.qid);
+      if (x && !habló.has(it.qid)) { habló.add(it.qid); sc.push({qid: it.qid, tipo: 'dice', texto: corto(x.hizo, 240)}); }
+      sc.push({qid: it.qid, tipo: 'pregunta', texto: it.texto + (it.sub ? ' ' + corto(it.sub, 170) : ''), fichas: it.fichas, ops: it.ops, libre: it.libre || !it.ops.length,
+        alElegir: v => { (it.k === 'p' ? borrador.respuestas : borrador.decisiones)[it.id] = v; }});
+    }
+    cierre('jefa', 'Listo. Guardo todo y se lo paso al equipo.');
+    sc[sc.length - 1].guarda = true;
+  } else if (clave === 'guiones') {
+    const nuevos = (of.guiones || []).filter(g => (g.estado || 'propuesta') === 'propuesta');
+    if (!nuevos.length) return [];
+    sc.push({qid: 'guion', tipo: 'dice', texto: `Mateo, te traje ${nuevos.length} ${nuevos.length === 1 ? 'guion' : 'guiones'} de reels. Decime cuáles van, cuáles quedan para después y cuáles no.`});
+    for (const g of nuevos) {
+      const ia = g.tipo === 'ia';
+      sc.push({qid: 'guion', tipo: 'pregunta', etiqueta: ia ? 'Para hacer con IA' : 'Para grabar nosotros', texto: `“${corto(g.gancho, 150)}” — ${g.titulo}. ${corto(g.escena, 160)}`,
+        pasos: g.beats || [], fichas: [['Prendas', (g.prendas || []).join(', ')], ['Dónde', g.lugar], [ia ? 'Personaje' : 'Quién actúa', g.personaje], ['Por qué', corto(g.por_que, 90)]],
+        ops: [{t: 'Va', v: 'va'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'No', v: 'descartado'}], alElegir: v => decidirGuion(g.archivo, v, g.titulo)});
+    }
+    cierre('guion', 'Listo. Lo que dijiste que va, lo preparo (Contenido IA si es de IA, o queda en la lista de rodaje).');
+  } else if (clave === 'producto') {
+    const nuevas = (of.propuestas || []).filter(x => (x.estado || 'propuesta') === 'propuesta');
+    if (!nuevas.length) return [];
+    sc.push({qid: 'tendencias', tipo: 'dice', texto: `Mateo, tengo ${nuevas.length} ${nuevas.length === 1 ? 'prenda' : 'prendas'} para el próximo lanzamiento. Te las cuento de a una.`});
+    for (const x of nuevas)
+      sc.push({qid: 'tendencias', tipo: 'pregunta', etiqueta: 'Prenda nueva', texto: `${x.prenda}. ${corto(x.idea, 200)}`, fichas: [['Precio sugerido', x.precio_sugerido], ['Costo estimado', x.costo_estimado], ['Lanzamiento', x.lanzamiento_sugerido]],
+        ops: [{t: 'La hacemos', v: 'hacerla'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'Descartar', v: 'descartada'}], alElegir: v => decidirPropuesta(x.archivo, v, x.id)});
+    cierre('tendencias', 'Listo. Con las que dijiste que sí, arranco con proveedores y costos.');
+  }
+  return sc;
+}
+function jugar(clave) {
+  const escenas = escenasDe(clave);
+  if (!escenas.length) return false;
+  cerrar(); abierto = null; vista = null;
+  enJuego = {clave, escenas, i: 0, hechas: 0, inicio: Object.keys(borrador.respuestas).length + Object.keys(borrador.decisiones).length};
+  document.body.classList.add('en-juego'); $('#juego').classList.add('abierto');
+  forzarMesa = clave === 'reunion'; aplicarEstados(datos);
+  if (clave === 'reunion') enfocarPunto(MESA.x, MESA.z, 11);
+  pintarEscena(); return true;
+}
+function salirJuego(aLista) {
+  const clave = enJuego && enJuego.clave; enJuego = null; forzarMesa = false;
+  document.body.classList.remove('en-juego'); $('#juego').classList.remove('abierto'); $('#juego').innerHTML = '';
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
+  aplicarEstados(datos); if (aLista && clave) abrirVista(clave, false, true); else { vistaGeneral(); pintar(); }
+}
+let relojTipeo;
+function pintarEscena() {
+  const j = enJuego, e = j.escenas[j.i], emp = datos.empleados.find(x => x.id === e.qid) || {};
+  document.querySelectorAll('.chip').forEach(c => c.classList.toggle('sel', c.dataset.id === e.qid));
+  if (j.clave !== 'reunion' && j.ultimo !== e.qid) { enfocar(e.qid); j.ultimo = e.qid; }
+  const fichas = (e.fichas || []).filter(([, v]) => v && String(v).trim()).map(([k, v]) => `<div><small>${esc(k)}</small>${esc(v)}</div>`).join('');
+  const pasos = (e.pasos || []).map(t => { const m = String(t).match(/^\s*([\d.,–-]+\s*s?)\s*[:.-]\s*(.+)$/s); return `<div><small>${esc(m ? m[1] : '')}</small>${esc(m ? m[2] : t)}</div>`; }).join('');
+  let accion;
+  if (e.tipo === 'dice') accion = `<div class="opc"><button data-jseguir>Seguir →</button></div>`;
+  else if (e.tipo === 'cierre') accion = `<div class="recap" id="j-recap"></div><div class="opc"><button data-jsalir>Cerrar</button></div>`;
+  else if (j.libre) accion = `<textarea id="j-lib" placeholder="Tu respuesta" autofocus></textarea><div class="opc" style="margin-top:8px"><button data-jenviar>Responder</button>${(e.ops || []).length ? '<button class="sec" data-jlibre="0">Volver a las opciones</button>' : ''}</div>`;
+  else accion = `<div class="opc">${(e.ops || []).map((o, k) => `<button data-jop="${k}" ${token ? '' : 'disabled'}>${esc(o.t)}</button>`).join('')}${e.libre ? `<button class="sec" data-jlibre="1" ${token ? '' : 'disabled'}>${(e.ops || []).length ? 'Escribir otra respuesta' : 'Responder'}</button>` : ''}</div>`;
+  if (e.tipo === 'pregunta' && e.libre && !(e.ops || []).length && !j.libre) j.libre = true, accion = `<textarea id="j-lib" placeholder="Tu respuesta"></textarea><div class="opc" style="margin-top:8px"><button data-jenviar ${token ? '' : 'disabled'}>Responder</button></div>`;
+  $('#juego').innerHTML = `<div class="escena"><div class="barrita"><span style="width:${Math.round(j.i / Math.max(j.escenas.length - 1, 1) * 100)}%"></span></div>
+    <div class="quien"><span class="retrato">${INICIAL[e.qid] || '·'}</span><div><span class="nom">${esc(emp.nombre || e.qid)}</span><div class="rol">${esc(e.etiqueta || emp.puesto || '')}</div></div></div>
+    <div class="texto" id="j-texto"></div>${pasos ? `<div class="fichas">${pasos}</div>` : ''}${fichas ? `<div class="fichas">${fichas}</div>` : ''}${accion}
+    <div class="pie"><span>${j.i + 1} de ${j.escenas.length}</span><span><button data-jlista>Ver como lista</button><button data-jsalir>Salir</button></span></div></div>`;
+  const t = $('#j-texto'), txt = e.texto; let n = 0;
+  clearInterval(relojTipeo);
+  relojTipeo = setInterval(() => { n += 3; t.textContent = txt.slice(0, n); if (n >= txt.length) clearInterval(relojTipeo); }, 16);
+  t.onclick = () => { clearInterval(relojTipeo); t.textContent = txt; };
+  if (e.tipo === 'cierre') cerrarEscena(e);
+  if (j.libre && $('#j-lib')) $('#j-lib').focus();
+}
+async function cerrarEscena(e) {
+  const j = enJuego, rec = $('#j-recap');
+  if (e.guarda && (Object.keys(borrador.respuestas).length || Object.keys(borrador.decisiones).length)) await guardarRespuestas();
+  const tot = (datos.numeros || {}).decisiones || 0;
+  if (rec && enJuego === j) rec.innerHTML = `<div><b>${j.hechas}</b><small>decisiones hoy</small></div><div><b>${tot + j.hechas}</b><small>en total</small></div><div><b>${(datos.pendientes || []).length}</b><small>te quedan</small></div>`;
+}
+function avanzarEscena(valor) {
+  const j = enJuego, e = j.escenas[j.i];
+  if (valor !== undefined && e.alElegir) { e.alElegir(valor); j.hechas++; }
+  j.libre = false; j.i = Math.min(j.i + 1, j.escenas.length - 1); pintarEscena();
+}
+
 // ---------- Para vos, la reunión, producto y guiones
-function abrirVista(cual, refresco) {
+function abrirVista(cual, refresco, lista) {
   const of = datos; if (!of) return;
+  if (!refresco && !lista && ['reunion', 'guiones', 'producto'].includes(cual) && jugar(cual)) return;
   abierto = null; vista = cual;
   if (!refresco) delete mazoPos[cual];
   document.querySelectorAll('.av').forEach(b => b.classList.toggle('sel', b.dataset.vista === cual));
@@ -1483,6 +1623,18 @@ function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add
 
 // ================= eventos
 document.addEventListener('click', ev => {
+  if (enJuego) {
+    const b = ev.target.closest('[data-jop],[data-jseguir],[data-jlibre],[data-jenviar],[data-jsalir],[data-jlista]');
+    if (b) {
+      const e = enJuego.escenas[enJuego.i];
+      if (b.dataset.jop !== undefined) return avanzarEscena(e.ops[+b.dataset.jop].v);
+      if (b.dataset.jseguir !== undefined) return avanzarEscena();
+      if (b.dataset.jlibre !== undefined) { enJuego.libre = b.dataset.jlibre === '1'; return pintarEscena(); }
+      if (b.dataset.jenviar !== undefined) { const t = ($('#j-lib') || {}).value || ''; if (!t.trim()) return toast('Escribí tu respuesta primero.'); return avanzarEscena(t.trim()); }
+      if (b.dataset.jsalir !== undefined) return salirJuego();
+      if (b.dataset.jlista !== undefined) return salirJuego(true);
+    }
+  }
   const mz = ev.target.closest('[data-mz]');
   if (mz) { const cl = mz.dataset.mz, it = (mazoItems[cl] || [])[mazoPos[cl] || 0]; return it && ELEGIR[cl](it, it.ops[+mz.dataset.k]); }
   const ml = ev.target.closest('[data-mzlibre]');
@@ -1504,7 +1656,7 @@ document.addEventListener('click', ev => {
   const q = ev.target.closest('.chip,.av,a[data-id]');
   if (q && q.dataset.id) { ev.preventDefault(); abrir(q.dataset.id); }
 });
-document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !cerrarVisor()) cerrar(); });
+document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !cerrarVisor()) { if (enJuego) salirJuego(); else cerrar(); } });
 $('#visor-volver').onclick = () => cerrarVisor();
 addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos', 'producto', 'guiones'].includes(id) ? abrirVista(id) : abrir(id); });
 $('#velo').onclick = cerrar;
