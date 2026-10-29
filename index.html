@@ -202,8 +202,8 @@ import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
 const REPO = 'grosoar/groso-oficina';
 const COLOR = {ok: '#5F8A6B', trabajando: '#1A1A1A', aviso: '#C49A2C', falla: '#B5462F', descanso: '#B9B7B0', pausa: '#B9B7B0'};
 const PALABRA = {ok: 'al día', trabajando: 'trabajando', aviso: 'ojo', falla: 'falló', descanso: 'descansa', pausa: 'en pausa'};
-const INICIAL = {jefa: 'J', tecnico: 'T', ventas: 'V', competencia: 'C', tendencias: 'P', diseno: 'D', marketing: 'M', contenido: 'IA'};
-const CON_IA = ['competencia', 'tendencias', 'diseno', 'marketing', 'contenido'];  // empleado.yml
+const INICIAL = {jefa: 'J', tecnico: 'T', ventas: 'V', competencia: 'C', tendencias: 'P', diseno: 'D', marketing: 'M', influencers: 'IN', desarrollo: 'DV', contenido: 'IA'};
+const CON_IA = ['competencia', 'tendencias', 'diseno', 'marketing', 'influencers', 'desarrollo', 'contenido'];  // empleado.yml
 const FLUJO = {'turno.yml': 'Turno', 'jefa.yml': 'Reunión', 'arreglar.yml': 'Arreglar'};
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
@@ -409,6 +409,8 @@ const LOOK = {
   tendencias: ['rodete', '#7A4E2D', '#F1EFE9', '#5A5A55', '#C99A74'],
   diseno: ['largo', '#111111', '#1A1A1A', '#1A1A1A', '#E8C4A0'],
   marketing: ['corto', '#5B4030', '#E4E3DF', '#1A1A1A', '#8A5B3D'],
+  influencers: ['largo', '#2B1B14', '#F1EFE9', '#3A3936', '#C99A74'],
+  desarrollo: ['corto', '#16120F', '#5A5A55', '#1A1A1A', '#E3BC98'],
   contenido: ['rodete', '#2B2119', '#1A1A1A', '#3A3936', '#B98563'],
 };
 
@@ -583,14 +585,15 @@ function sillon(padre, x, z, rotY = 0) {
 
 // ---------- lugares: dónde se sienta cada uno [x, z, mira hacia (rotY)]
 // dos filas: adelante los de la fase 1 y Marketing; atrás los que investigan y crean (miran hacia adelante)
-const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [1.6, -1.2], ventas: [5.6, -1.2], marketing: [9.6, -1.2],
-  competencia: [-2.4, -6.0], tendencias: [1.6, -6.0], diseno: [5.6, -6.0], contenido: [9.6, -6.0]};
+const ESCRITORIO = {jefa: [-2.4, -1.2], tecnico: [.8, -1.2], ventas: [4.0, -1.2], marketing: [7.2, -1.2], influencers: [10.4, -1.2],
+  competencia: [-2.4, -6.0], tendencias: [.8, -6.0], diseno: [4.0, -6.0], contenido: [7.2, -6.0], desarrollo: [10.4, -6.0]};
 const PROXIMOS = [];  // escritorios vacíos con cartel (hoy no queda ninguno)
 const MESA = {x: -9.6, z: -5.6};
-// la mesa tiene 8 lugares: las dos cabeceras y tres por lado
-const EN_MESA = {jefa: [MESA.x - 2.55, MESA.z, Math.PI / 2], tecnico: [MESA.x - 1.4, MESA.z - 1.05, 0], ventas: [MESA.x, MESA.z - 1.05, 0],
-  marketing: [MESA.x + 1.4, MESA.z - 1.05, 0], competencia: [MESA.x - 1.4, MESA.z + 1.05, Math.PI], tendencias: [MESA.x, MESA.z + 1.05, Math.PI],
-  diseno: [MESA.x + 1.4, MESA.z + 1.05, Math.PI], contenido: [MESA.x + 2.55, MESA.z, -Math.PI / 2]};
+// la mesa tiene 10 lugares: las dos cabeceras y cuatro por lado
+const EN_MESA = {jefa: [MESA.x - 2.55, MESA.z, Math.PI / 2], tecnico: [MESA.x - 1.575, MESA.z - 1.05, 0], ventas: [MESA.x - .525, MESA.z - 1.05, 0],
+  marketing: [MESA.x + .525, MESA.z - 1.05, 0], influencers: [MESA.x + 1.575, MESA.z - 1.05, 0],
+  competencia: [MESA.x - 1.575, MESA.z + 1.05, Math.PI], tendencias: [MESA.x - .525, MESA.z + 1.05, Math.PI],
+  diseno: [MESA.x + .525, MESA.z + 1.05, Math.PI], desarrollo: [MESA.x + 1.575, MESA.z + 1.05, Math.PI], contenido: [MESA.x + 2.55, MESA.z, -Math.PI / 2]};
 const MATEO = {x: -9.4, z: 4.2};
 // cuatro sillas frente a tu escritorio: las ocupan, en orden, los que te necesitan
 const CON_MATEO = [[MATEO.x - 1.2, MATEO.z + 1.15, Math.PI], [MATEO.x - .4, MATEO.z + 1.15, Math.PI], [MATEO.x + .4, MATEO.z + 1.15, Math.PI], [MATEO.x + 1.2, MATEO.z + 1.15, Math.PI]];
@@ -664,7 +667,7 @@ function construir(of) {
   for (const y of [.05, 1.0, 2.6]) { caja(.06, .06, 4.6, mm, -6, y, -6.7, mundo, false); caja(7, .06, .06, mm, -9.5, y, -2, mundo, false); }
   caja(4.6, .08, 1.5, NOGAL_CLARO, MESA.x, .78, MESA.z, mundo);
   for (const sx of [-1.8, 1.8]) caja(.5, .74, 1.0, NOGAL, MESA.x + sx, .37, MESA.z, mundo);
-  for (const x of [-1.4, 0, 1.4]) { silla(mundo, MESA.x + x, MESA.z - 1.05, 0); silla(mundo, MESA.x + x, MESA.z + 1.05, Math.PI); }
+  for (const x of [-1.575, -.525, .525, 1.575]) { silla(mundo, MESA.x + x, MESA.z - 1.05, 0); silla(mundo, MESA.x + x, MESA.z + 1.05, Math.PI); }
   silla(mundo, MESA.x - 2.55, MESA.z, Math.PI / 2); silla(mundo, MESA.x + 2.55, MESA.z, -Math.PI / 2);
   lampara(mundo, MESA.x - 1.1, MESA.z, 2.35, .26, true); lampara(mundo, MESA.x + 1.1, MESA.z, 2.35, .26);
   retrato(mundo, -W + .04, 1.7, -5.6, Math.PI / 2, 1.1, .8, 9);
