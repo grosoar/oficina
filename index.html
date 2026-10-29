@@ -234,6 +234,63 @@ body.en-juego #dock,body.en-juego #resumen,body.en-juego #paravos{display:none}
 .escena .pie button{background:none;border:0;color:#B9B7B0;cursor:pointer;font-size:12px;padding:4px 6px;font-family:var(--t)}
 .escena .barrita{height:3px;background:#3A3936;border-radius:2px;margin:0 -20px 0;overflow:hidden;border-radius:10px 10px 0 0}
 .escena .barrita span{display:block;height:100%;background:var(--ok);transition:width .3s}
+.escena{position:relative;will-change:transform}
+.escena .arrastre{touch-action:none}.escena .texto.arrastre{cursor:grab}
+.escena .cuerpo{max-height:calc(100dvh - 330px);min-height:60px;overflow-y:auto;overscroll-behavior:contain}
+.escena .antes{font-size:12.5px;line-height:1.4;color:#B9B7B0;border-left:2px solid #5A5A55;padding:1px 0 1px 10px;margin:12px 0 0}
+.escena .opc.una{grid-template-columns:1fr}
+.escena .opc.n3{grid-template-columns:repeat(3,1fr)}.escena .opc.n2{grid-template-columns:repeat(2,1fr)}
+.escena .opc button{position:relative;min-height:52px}
+.escena .opc button.go{background:var(--tiza)}
+.escena .opc button.si{background:#DCEBDF;box-shadow:inset 0 -3px 0 var(--ok)}
+.escena .opc button.des{background:#F1E8CC;box-shadow:inset 0 -3px 0 var(--ojo)}
+.escena .opc button.no{background:#F0DDD7;box-shadow:inset 0 -3px 0 var(--rojo)}
+.escena .opc button:active{transform:scale(.97)}
+.escena .opc button:disabled{opacity:.45;cursor:not-allowed}
+.escena .opc button.grab{border-color:var(--rojo);color:#fff;animation:late 1s infinite}
+@keyframes late{50%{background:#3A2A27}}
+.escena kbd{font-family:var(--m);font-size:10px;font-weight:500;background:rgba(26,26,26,.12);border-radius:3px;padding:1px 5px;margin-right:7px;vertical-align:1px}
+.escena .opc button.sec kbd{background:rgba(255,255,255,.12)}
+.escena .rapidas{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}
+.escena .rapidas button{background:#2E2E2C;color:var(--tiza);border:1px solid #5A5A55;border-radius:18px;padding:7px 14px;font-size:13.5px;cursor:pointer}
+.escena .rapidas button:hover{background:#3A3936}
+.escena .swhint{display:none;text-align:center;font-family:var(--m);font-size:10px;letter-spacing:.04em;color:#8B8A85;margin-top:8px}
+@media(hover:none){.escena .swhint{display:block}.escena kbd{display:none}}
+@media(max-width:560px){.escena .opc.n3,.escena .opc.n2{grid-template-columns:1fr}.escena .opc button{min-height:48px;padding:12px 10px}.escena .texto{font-size:17px}.escena .cuerpo{max-height:calc(100dvh - 400px)}}
+.escena .sinclave{background:#3A2A27;color:#F0DDD7;border-radius:5px;padding:8px 11px;font-size:12.5px;margin-bottom:8px}
+.escena .j-fotos{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 12px}
+.escena .j-fotos img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:3px;background:#2E2E2C;cursor:zoom-in}
+.escena .j-mas{margin:0 0 12px;font-size:13px}
+.escena .j-mas summary{cursor:pointer;color:#B9B7B0;font-size:12.5px;padding:4px 0}
+.escena .j-mas>span{display:block;margin:6px 0;line-height:1.4;color:#D8D6CF}.escena .j-mas a{color:var(--tiza)}
+.escena .j-mas pre{white-space:pre-wrap;background:#2E2E2C;border-radius:5px;padding:8px 10px;font-size:12px;color:#D8D6CF}
+.escena .j-mas .btn{background:var(--tiza);color:var(--grafito);border:0;border-radius:4px;padding:7px 12px;cursor:pointer}
+.escena .racha{color:var(--ojo)}
+.escena .pie>span:first-child,.escena .pie>span:last-child{flex:1}.escena .pie>span:last-child{text-align:right}
+.escena .puntos{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:center}
+.escena .puntos i{width:8px;height:8px;border-radius:50%;background:#3A3936;transition:background .2s,transform .2s}
+.escena .puntos i.ok{background:var(--ok)}.escena .puntos i.skip{background:transparent;box-shadow:inset 0 0 0 1.5px #8B8A85}
+.escena .puntos i.act{background:var(--tiza);transform:scale(1.4)}
+.escena .pie button:disabled{opacity:.3;cursor:default}
+.escena .recap{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 10px}
+.escena .recap div{background:#2E2E2C;border-radius:6px;padding:10px;text-align:center}
+.escena .recap b{display:block;font-family:var(--d);font-weight:400;font-size:24px}
+.escena .recap small{font-family:var(--m);font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:#9B9A94}
+.escena .j-log{max-height:120px;overflow-y:auto;margin:0 0 10px;font-size:13px}
+.escena .j-log div{display:flex;justify-content:space-between;gap:12px;padding:5px 0;border-bottom:1px solid #3A3936}
+.escena .j-log b{font-weight:600;color:var(--tiza);text-align:right;flex:none;max-width:45%}
+.escena .j-log span{color:#B9B7B0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hintsw{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-6deg);z-index:3;pointer-events:none;opacity:0;font-family:var(--d);font-size:22px;letter-spacing:.06em;text-transform:uppercase;padding:8px 16px;border:3px solid var(--tiza);border-radius:6px;background:rgba(26,26,26,.85)}
+.hintsw.ver{display:block}.hintsw.si{border-color:var(--ok);color:#A9D2B5}.hintsw.des{border-color:var(--ojo);color:#E8CE85}.hintsw.no{border-color:var(--rojo);color:#E6A595}
+#juego .reac{pointer-events:auto;display:flex;align-items:center;gap:9px;width:fit-content;max-width:calc(100% - 90px);margin:0 0 -40px auto;position:relative;z-index:2;background:rgba(26,26,26,.97);color:var(--tiza);border:1px solid #3A3936;border-left:4px solid #8B8A85;border-radius:18px;padding:6px 8px 6px 7px;font-size:12.5px;line-height:1.3;animation:sube .25s ease-out,reacfuera .4s 5.6s forwards}
+#juego .reac.si{border-left-color:var(--ok)}#juego .reac.des{border-left-color:var(--ojo)}#juego .reac.no{border-left-color:var(--rojo)}
+#juego .reac .mini{width:24px;height:24px;border-radius:50%;background:var(--tiza);color:var(--grafito);display:grid;place-items:center;font-family:var(--d);font-size:9px;flex:none}
+#juego .reac em{font-style:normal;font-family:var(--m);font-size:10.5px;color:#B9B7B0;white-space:nowrap}
+#juego .reac button{background:none;border:0;color:var(--tiza);text-decoration:underline;cursor:pointer;font-size:12px;padding:2px 6px}
+@keyframes reacfuera{to{opacity:0;visibility:hidden}}
+@media(max-width:560px){#juego .reac{max-width:calc(100% - 20px);margin:0 0 6px auto}#juego .reac em{display:none}}
+.chispa{position:fixed;width:7px;height:7px;border-radius:50%;z-index:20;pointer-events:none;animation:chispa .65s ease-out forwards}
+@keyframes chispa{from{transform:translate(0,0) scale(1);opacity:1}to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
 .recap{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 12px}
 .recap div{background:#2E2E2C;border-radius:6px;padding:10px;text-align:center}
 .recap b{display:block;font-family:var(--d);font-weight:400;font-size:24px}
@@ -1168,14 +1225,15 @@ function escenasDe(clave) {
     const resp = Object.assign({}, r.respuestas || {}, borrador.respuestas), dec = Object.assign({}, r.decisiones || {}, borrador.decisiones);
     const pend = [
       ...(r.preguntas || []).filter(p => !String(resp[p.id] || '').trim()).map(p => ({k: 'p', id: p.id, qid: p.quien, texto: p.texto, sub: p.por_que, ops: (p.opciones || []).map(o => ({t: o, v: o})), libre: true})),
-      ...(r.ideas || []).filter(i => !dec[i.id]).map(i => ({k: 'i', id: i.id, qid: i.quien, texto: 'Te propongo: ' + i.titulo, fichas: [['Costo', i.costo], ['Qué esperamos', i.esperado], ['Cómo se mide', i.medida]], ops: ['Aprobada', 'Más adelante', 'Descartada'].map(o => ({t: o, v: o}))}))];
+      ...(r.ideas || []).filter(i => !dec[i.id]).map(i => ({k: 'i', id: i.id, qid: i.quien, titulo: i.titulo, texto: 'Te propongo: ' + i.titulo, fichas: [['Costo', i.costo], ['Qué esperamos', i.esperado], ['Cómo se mide', i.medida]], ops: ['Aprobada', 'Más adelante', 'Descartada'].map(o => ({t: o, v: o}))}))];
     if (!pend.length) return [];
     sc.push({qid: 'jefa', tipo: 'dice', texto: `Buenas, Mateo. Reunión del ${r.fecha.slice(8, 10)}/${r.fecha.slice(5, 7)}. ${corto(r.resumen, 230)} Tengo ${pend.length} ${pend.length === 1 ? 'cosa' : 'cosas'} para que decidas.`});
     const habló = new Set();
     for (const it of pend) {
       const x = (r.equipo || []).find(y => y.empleado === it.qid);
-      if (x && !habló.has(it.qid)) { habló.add(it.qid); sc.push({qid: it.qid, tipo: 'dice', texto: corto(x.hizo, 240)}); }
-      sc.push({qid: it.qid, tipo: 'pregunta', texto: it.texto + (it.sub ? ' ' + corto(it.sub, 170) : ''), fichas: it.fichas, ops: it.ops, libre: it.libre || !it.ops.length,
+      let antes = '';
+      if (x && !habló.has(it.qid)) { habló.add(it.qid); antes = 'Esta semana: ' + corto(x.hizo, 240); }
+      sc.push({qid: it.qid, tipo: 'pregunta', antes, resumen: corto(it.titulo || it.texto, 70), texto: it.texto + (it.sub ? ' ' + corto(it.sub, 170) : ''), fichas: it.fichas, ops: it.ops, libre: it.libre || !it.ops.length,
         alElegir: v => { (it.k === 'p' ? borrador.respuestas : borrador.decisiones)[it.id] = v; }});
     }
     cierre('jefa', 'Listo. Guardo todo y se lo paso al equipo.');
@@ -1186,7 +1244,11 @@ function escenasDe(clave) {
     sc.push({qid: 'guion', tipo: 'dice', texto: `Mateo, te traje ${nuevos.length} ${nuevos.length === 1 ? 'guion' : 'guiones'} de reels. Decime cuáles van, cuáles quedan para después y cuáles no.`});
     for (const g of nuevos) {
       const ia = g.tipo === 'ia';
-      sc.push({qid: 'guion', tipo: 'pregunta', etiqueta: ia ? 'Para hacer con IA' : 'Para grabar nosotros', texto: `“${corto(g.gancho, 150)}” — ${g.titulo}. ${corto(g.escena, 160)}`,
+      sc.push({qid: 'guion', tipo: 'pregunta', etiqueta: ia ? 'Para hacer con IA' : 'Para grabar nosotros', resumen: g.titulo, texto: `“${corto(g.gancho, 150)}” — ${g.titulo}. ${corto(g.escena, 200)}`,
+        masTitulo: ia ? 'Ver por qué, referente y prompt' : 'Ver por qué, referente y qué hace falta',
+        mas: `${g.texto_en_pantalla ? `<span><b>Texto en pantalla:</b> ${esc(g.texto_en_pantalla)}</span>` : ''}${g.por_que ? `<span><b>Por qué:</b> ${esc(g.por_que)}</span>` : ''}
+          ${g.referente ? `<span><b>Referente:</b> ${esc(String(g.referente).replace(/https?:\/\/\S+/, '').trim())} ${linkA((String(g.referente).match(/https?:\/\/\S+/) || [''])[0], 'ver')}</span>` : ''}
+          ${g.que_hace_falta ? `<span><b>Hace falta:</b> ${esc(g.que_hace_falta)}</span>` : ''}${g.prompt ? `<span><b>Prompt:</b></span><pre>${esc(g.prompt)}</pre>` : ''}`,
         pasos: g.beats || [], fichas: [['Prendas', (g.prendas || []).join(', ')], ['Dónde', g.lugar], [ia ? 'Personaje' : 'Quién actúa', g.personaje], ['Por qué', corto(g.por_que, 90)]],
         ops: [{t: 'Va', v: 'va'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'No', v: 'descartado'}], alElegir: v => decidirGuion(g.archivo, v, g.titulo)});
     }
@@ -1196,62 +1258,172 @@ function escenasDe(clave) {
     if (!nuevas.length) return [];
     sc.push({qid: 'tendencias', tipo: 'dice', texto: `Mateo, tengo ${nuevas.length} ${nuevas.length === 1 ? 'prenda' : 'prendas'} para el próximo lanzamiento. Te las cuento de a una.`});
     for (const x of nuevas)
-      sc.push({qid: 'tendencias', tipo: 'pregunta', etiqueta: 'Prenda nueva', texto: `${x.prenda}. ${corto(x.idea, 200)}`, fichas: [['Precio sugerido', x.precio_sugerido], ['Costo estimado', x.costo_estimado], ['Lanzamiento', x.lanzamiento_sugerido]],
+      sc.push({qid: 'tendencias', tipo: 'pregunta', etiqueta: 'Prenda nueva', resumen: x.prenda, fotos: x.fotos || [], texto: `${x.prenda}. ${corto(x.idea, 240)}`,
+        masTitulo: 'Ver corte, tela, proveedores y riesgos', mas: `<span>Inspirada en: ${(x.inspirada_en || []).map(r => linkA(r.link, r.marca)).join(', ') || '—'}</span>
+          <span>Corte: ${esc(x.corte)} · Tela: ${esc(x.tela)}</span><span>Colores: ${esc((x.colores || []).join(', '))}</span><span>Detalles: ${esc((x.detalles || []).join(' · '))}</span>
+          ${(x.proveedores || []).length ? `<span>Proveedores: ${x.proveedores.map(v => linkA(v.contacto, v.nombre)).join(', ')}</span>` : ''}
+          ${x.riesgos ? `<span>Riesgos: ${esc(x.riesgos)}</span>` : ''}${x.marketing ? `<span><b>Cómo lo lanzaríamos:</b> ${esc(x.marketing)}</span>` : ''}
+          ${x.diseno ? `<span><button class="btn" data-pieza="${esc(x.diseno)}">Ver la lámina</button></span>` : ''}`, fichas: [['Precio sugerido', x.precio_sugerido], ['Costo estimado', x.costo_estimado], ['Lanzamiento', x.lanzamiento_sugerido]],
         ops: [{t: 'La hacemos', v: 'hacerla'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'Descartar', v: 'descartada'}], alElegir: v => decidirPropuesta(x.archivo, v, x.id)});
     cierre('tendencias', 'Listo. Con las que dijiste que sí, arranco con proveedores y costos.');
   }
   return sc;
 }
+const CLASE = {va: 'si', hacerla: 'si', Aprobada: 'si', 'mas adelante': 'des', 'Más adelante': 'des', descartado: 'no', descartada: 'no', Descartada: 'no'};
+const REACC = {
+  si: ['Dale, lo preparo.', 'Perfecto, avanzo con eso.', 'Anotado, va.', 'Excelente, arranco.'],
+  des: ['Va, lo dejo para más adelante.', 'Entendido, queda en espera.', 'Perfecto, lo guardo.'],
+  no: ['Listo, no insisto con eso.', 'Anotado, aprendo de esto.', 'Entendido, lo saco de la lista.'],
+  txt: ['Anotado, gracias.', 'Perfecto, lo tengo en cuenta.', 'Entendido, gracias.']};
 function jugar(clave) {
   const escenas = escenasDe(clave);
   if (!escenas.length) return false;
   cerrar(); abierto = null; vista = null;
-  enJuego = {clave, escenas, i: 0, hechas: 0, inicio: Object.keys(borrador.respuestas).length + Object.keys(borrador.decisiones).length};
+  enJuego = {clave, escenas, i: 0, hist: [], estado: {}, log: {}, racha: 0, pend: null, reac: null, libre: false, rapido: false};
   document.body.classList.add('en-juego'); $('#juego').classList.add('abierto');
   forzarMesa = clave === 'reunion'; aplicarEstados(datos);
   if (clave === 'reunion') enfocarPunto(MESA.x, MESA.z, 11);
   pintarEscena(); return true;
 }
 function salirJuego(aLista) {
+  confirmarPend(); frenarDictado(); clearInterval(relojTipeo);
   const clave = enJuego && enJuego.clave; enJuego = null; forzarMesa = false;
   document.body.classList.remove('en-juego'); $('#juego').classList.remove('abierto'); $('#juego').innerHTML = '';
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('sel'));
   aplicarEstados(datos); if (aLista && clave) abrirVista(clave, false, true); else { vistaGeneral(); pintar(); }
 }
-let relojTipeo;
+let relojTipeo, dictado = null;
+function frenarDictado() { if (dictado) { try { dictado.abort(); } catch (e) {} dictado = null; } }
 function pintarEscena() {
   const j = enJuego, e = j.escenas[j.i], emp = datos.empleados.find(x => x.id === e.qid) || {};
+  frenarDictado();
   document.querySelectorAll('.chip').forEach(c => c.classList.toggle('sel', c.dataset.id === e.qid));
   if (j.clave !== 'reunion' && j.ultimo !== e.qid) { enfocar(e.qid); j.ultimo = e.qid; }
   const fichas = (e.fichas || []).filter(([, v]) => v && String(v).trim()).map(([k, v]) => `<div><small>${esc(k)}</small>${esc(v)}</div>`).join('');
   const pasos = (e.pasos || []).map(t => { const m = String(t).match(/^\s*([\d.,–-]+\s*s?)\s*[:.-]\s*(.+)$/s); return `<div><small>${esc(m ? m[1] : '')}</small>${esc(m ? m[2] : t)}</div>`; }).join('');
+  const fotos = (e.fotos || []).length ? `<div class="j-fotos">${e.fotos.slice(0, 3).map(f => `<img data-foto="${esc(f)}" alt="${esc(e.resumen || '')}" loading="lazy">`).join('')}</div>` : '';
+  const mas = e.mas ? `<details class="j-mas"><summary>${esc(e.masTitulo || 'Ver el detalle')}</summary>${e.mas}</details>` : '';
+  const sd = token ? '' : 'disabled', ops = e.ops || [], libre = e.tipo === 'pregunta' && (j.libre || (e.libre && !ops.length));
+  const hayDictado = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
   let accion;
-  if (e.tipo === 'dice') accion = `<div class="opc"><button data-jseguir>Seguir →</button></div>`;
-  else if (e.tipo === 'cierre') accion = `<div class="recap" id="j-recap"></div><div class="opc"><button data-jsalir>Cerrar</button></div>`;
-  else if (j.libre) accion = `<textarea id="j-lib" placeholder="Tu respuesta" autofocus></textarea><div class="opc" style="margin-top:8px"><button data-jenviar>Responder</button>${(e.ops || []).length ? '<button class="sec" data-jlibre="0">Volver a las opciones</button>' : ''}</div>`;
-  else accion = `<div class="opc">${(e.ops || []).map((o, k) => `<button data-jop="${k}" ${token ? '' : 'disabled'}>${esc(o.t)}</button>`).join('')}${e.libre ? `<button class="sec" data-jlibre="1" ${token ? '' : 'disabled'}>${(e.ops || []).length ? 'Escribir otra respuesta' : 'Responder'}</button>` : ''}</div>`;
-  if (e.tipo === 'pregunta' && e.libre && !(e.ops || []).length && !j.libre) j.libre = true, accion = `<textarea id="j-lib" placeholder="Tu respuesta"></textarea><div class="opc" style="margin-top:8px"><button data-jenviar ${token ? '' : 'disabled'}>Responder</button></div>`;
-  $('#juego').innerHTML = `<div class="escena"><div class="barrita"><span style="width:${Math.round(j.i / Math.max(j.escenas.length - 1, 1) * 100)}%"></span></div>
-    <div class="quien"><span class="retrato">${INICIAL[e.qid] || '·'}</span><div><span class="nom">${esc(emp.nombre || e.qid)}</span><div class="rol">${esc(e.etiqueta || emp.puesto || '')}</div></div></div>
-    <div class="texto" id="j-texto"></div>${pasos ? `<div class="fichas">${pasos}</div>` : ''}${fichas ? `<div class="fichas">${fichas}</div>` : ''}${accion}
-    <div class="pie"><span>${j.i + 1} de ${j.escenas.length}</span><span><button data-jlista>Ver como lista</button><button data-jsalir>Salir</button></span></div></div>`;
+  if (e.tipo === 'dice') accion = `<div class="opc una"><button class="go" data-jseguir><kbd>↵</kbd>${esc(e.boton || 'Dale')} →</button></div>`;
+  else if (e.tipo === 'cierre') accion = `<div class="recap" id="j-recap"></div><div id="j-log" class="j-log"></div><div class="opc una" id="j-fin"><button class="go" data-jsalir>Cerrar</button></div>`;
+  else if (libre) accion = `${!ops.length ? `<div class="rapidas">${['Sí', 'No', 'Decidilo vos'].map(t => `<button data-jrapida="${esc(t)}" ${sd}>${t}</button>`).join('')}</div>` : ''}
+    <textarea id="j-lib" placeholder="Escribí tu respuesta (Enter la manda)"></textarea>
+    <div class="opc"><button class="go" data-jenviar ${sd}>Responder</button>${hayDictado ? `<button class="sec" data-jdictar ${sd}>● Dictar</button>` : ''}${ops.length ? '<button class="sec" data-jlibre="0">Volver a las opciones</button>' : ''}</div>`;
+  else accion = `<div class="opc n${ops.length}">${ops.map((o, k) => `<button class="${CLASE[o.v] || ''}" data-jop="${k}" ${sd}><kbd>${k + 1}</kbd>${esc(o.t)}</button>`).join('')}${e.libre ? `<button class="sec" data-jlibre="1" ${sd}>Escribir otra respuesta</button>` : ''}</div>
+    ${ops.length >= 2 && ops.length <= 3 ? `<div class="swhint">Deslizá la tarjeta: ← ${esc(ops[ops.length - 1].t)}${ops.length === 3 ? ` · ↑ ${esc(ops[1].t)}` : ''} · ${esc(ops[0].t)} →</div>` : ''}`;
+  const q = j.escenas.filter(s => s.tipo === 'pregunta');
+  const puntos = q.length > 1 ? j.escenas.map((s, k) => s.tipo === 'pregunta' ? `<i class="${k === j.i ? 'act' : j.estado[k] || ''}"></i>` : '').join('') : '';
+  const r = j.reac, rem = r && datos.empleados.find(x => x.id === r.qid) || {};
+  $('#juego').innerHTML = `${r ? `<div class="reac ${r.clase}"><span class="mini">${INICIAL[r.qid] || '·'}</span><span><b>${esc(rem.nombre || '')}</b>: ${esc(r.texto)}</span><em>${esc(r.et)}</em><button data-jdeshacer>Deshacer</button></div>` : ''}
+    <div class="escena"><div class="barrita"><span style="width:${Math.round(j.i / Math.max(j.escenas.length - 1, 1) * 100)}%"></span></div><div class="hintsw" id="j-hint"></div>
+    <div class="quien arrastre"><span class="retrato">${INICIAL[e.qid] || '·'}</span><div><span class="nom">${esc(emp.nombre || e.qid)}</span><div class="rol">${esc(e.etiqueta || emp.puesto || '')}${j.racha >= 2 && e.tipo === 'pregunta' ? ` · <span class="racha">racha ×${j.racha}</span>` : ''}</div></div></div>
+    <div class="cuerpo">${e.antes ? `<div class="antes">${esc(e.antes)}</div>` : ''}<div class="texto arrastre" id="j-texto"></div>${pasos ? `<div class="fichas">${pasos}</div>` : ''}${fichas ? `<div class="fichas">${fichas}</div>` : ''}${fotos}${mas}</div>
+    ${token ? '' : '<div class="sinclave">Para responder falta la clave: pegala en la configuración de la oficina.</div>'}${accion}
+    <div class="pie"><span><button data-jdeshacer ${j.hist.length ? '' : 'disabled'}>← Atrás</button>${e.tipo === 'pregunta' ? '<button data-jsaltear>Saltear</button>' : ''}</span><span class="puntos">${puntos}</span><span><button data-jlista>Ver como lista</button><button data-jsalir>Salir</button></span></div></div>`;
   const t = $('#j-texto'), txt = e.texto; let n = 0;
   clearInterval(relojTipeo);
-  relojTipeo = setInterval(() => { n += 3; t.textContent = txt.slice(0, n); if (n >= txt.length) clearInterval(relojTipeo); }, 16);
-  t.onclick = () => { clearInterval(relojTipeo); t.textContent = txt; };
+  if (j.rapido || matchMedia('(prefers-reduced-motion: reduce)').matches) t.textContent = txt;
+  else relojTipeo = setInterval(() => { n += 4; t.textContent = txt.slice(0, n); if (n >= txt.length) clearInterval(relojTipeo); }, 14);
+  t.addEventListener('click', () => { clearInterval(relojTipeo); t.textContent = txt; });
+  if (e.fotos && e.fotos.length) cargarFotos();
   if (e.tipo === 'cierre') cerrarEscena(e);
-  if (j.libre && $('#j-lib')) $('#j-lib').focus();
+  if (libre && $('#j-lib')) $('#j-lib').focus();
+  armarSwipe(e);
 }
 async function cerrarEscena(e) {
   const j = enJuego, rec = $('#j-recap');
   if (e.guarda && (Object.keys(borrador.respuestas).length || Object.keys(borrador.decisiones).length)) await guardarRespuestas();
-  const tot = (datos.numeros || {}).decisiones || 0;
-  if (rec && enJuego === j) rec.innerHTML = `<div><b>${j.hechas}</b><small>decisiones hoy</small></div><div><b>${tot + j.hechas}</b><small>en total</small></div><div><b>${(datos.pendientes || []).length}</b><small>te quedan</small></div>`;
+  if (enJuego !== j || !rec) return;
+  const saltadas = Object.keys(j.estado).filter(k => j.estado[k] === 'skip');
+  const hechas = Object.keys(j.log).length, tot = (datos.numeros || {}).decisiones || 0, quedan = Math.max((datos.pendientes || []).length, saltadas.length);
+  rec.innerHTML = `<div><b data-n="${hechas}">0</b><small>decisiones hoy</small></div><div><b data-n="${tot + hechas}">0</b><small>en total</small></div><div><b data-n="${quedan}">0</b><small>te quedan</small></div>`;
+  rec.querySelectorAll('[data-n]').forEach(b => { const fin = +b.dataset.n; let v = 0; const paso = () => { v = Math.min(fin, v + Math.max(1, Math.ceil(fin / 14))); b.textContent = v; if (v < fin) setTimeout(paso, 40); }; paso(); });
+  const lg = $('#j-log');
+  if (lg) lg.innerHTML = Object.keys(j.log).sort((a, b) => a - b).map(k => `<div><span>${esc(j.log[k].t)}</span><b>${esc(j.log[k].v)}</b></div>`).join('');
+  if (saltadas.length && $('#j-fin')) $('#j-fin').insertAdjacentHTML('afterbegin', `<button class="sec" data-jvolver="${saltadas[0]}">Volver a las ${saltadas.length} que salteaste</button>`);
 }
-function avanzarEscena(valor) {
+// lo elegido se guarda a los 6 segundos (o antes, al responder la siguiente): así se puede deshacer sin haber escrito nada en el repo
+function confirmarPend() {
+  const j = enJuego; if (!j || !j.pend) return;
+  clearTimeout(j.pend.t); const fn = j.pend.fn; j.pend = null; fn();
+}
+function avanzarEscena(valor, op) {
   const j = enJuego, e = j.escenas[j.i];
-  if (valor !== undefined && e.alElegir) { e.alElegir(valor); j.hechas++; }
-  j.libre = false; j.i = Math.min(j.i + 1, j.escenas.length - 1); pintarEscena();
+  confirmarPend(); j.reac = null;
+  if (valor !== undefined && e.alElegir) {
+    const clase = CLASE[valor] || 'txt', lista = REACC[clase], et = op ? op.t : corto(valor, 40);
+    j.pend = {t: setTimeout(confirmarPend, 6000), fn: () => e.alElegir(valor)};
+    j.reac = {qid: e.qid, clase, et, texto: lista[Object.keys(j.log).length % lista.length]};
+    j.estado[j.i] = 'ok'; j.log[j.i] = {t: e.resumen || corto(e.texto, 50), v: et}; j.racha++;
+  } else if (e.tipo === 'pregunta') { delete j.log[j.i]; j.estado[j.i] = 'skip'; j.racha = 0; }
+  j.hist.push(j.i); j.libre = false; j.rapido = false;
+  j.i = Math.min(j.i + 1, j.escenas.length - 1);
+  if (j.escenas[j.i].tipo === 'cierre') confirmarPend();
+  pintarEscena();
+}
+function deshacer() {
+  const j = enJuego; if (!j || !j.hist.length) return;
+  if (j.pend) { clearTimeout(j.pend.t); j.pend = null; }
+  j.i = j.hist.pop(); j.reac = null; j.libre = false; j.rapido = true;
+  if (j.estado[j.i] === 'ok') j.racha = Math.max(0, j.racha - 1);
+  delete j.estado[j.i]; delete j.log[j.i];
+  pintarEscena();
+}
+function irA(k) {
+  const j = enJuego; confirmarPend(); j.reac = null; j.libre = false; j.rapido = true;
+  j.hist.push(j.i); j.i = +k; delete j.estado[j.i]; pintarEscena();
+}
+function chispas(x, y, clase) {
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const col = {si: 'var(--ok)', des: 'var(--ojo)', no: 'var(--rojo)'}[clase] || '#F1EFE9';
+  for (let k = 0; k < 12; k++) {
+    const p = document.createElement('i'), a = Math.PI * 2 * k / 12 + Math.random() * .5, d = 34 + Math.random() * 46;
+    p.className = 'chispa'; p.style.cssText = `left:${x}px;top:${y}px;background:${col};--dx:${Math.cos(a) * d}px;--dy:${Math.sin(a) * d}px`;
+    document.body.appendChild(p); setTimeout(() => p.remove(), 700);
+  }
+}
+function dictar() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition, t = $('#j-lib'), b = document.querySelector('[data-jdictar]');
+  if (!SR || !t) return;
+  if (dictado) { dictado.stop(); return; }
+  const r = dictado = new SR(), base = t.value.trim() ? t.value.trim() + ' ' : '';
+  r.lang = 'es-AR'; r.interimResults = true; r.continuous = true;
+  r.onresult = ev => { t.value = base + Array.from(ev.results).map(x => x[0].transcript).join(' ').trim(); };
+  r.onend = () => { if (dictado === r) dictado = null; if (b) { b.classList.remove('grab'); b.textContent = '● Dictar'; } };
+  r.onerror = ev => toast(ev.error === 'not-allowed' ? 'El navegador no me dejó usar el micrófono.' : 'No pude escucharte, probá de nuevo.');
+  b.classList.add('grab'); b.textContent = 'Escuchando… tocá para parar'; r.start();
+}
+// deslizar la tarjeta: → la primera opción, ← la última, ↑ la del medio
+function armarSwipe(e) {
+  const j = enJuego, card = document.querySelector('.escena'), ops = e.ops || [], hint = $('#j-hint');
+  if (!card || e.tipo !== 'pregunta' || ops.length < 2 || ops.length > 3 || j.libre || !token) return;
+  let x0 = 0, y0 = 0, dx = 0, dy = 0, arr = false;
+  const dir = () => Math.abs(dx) >= Math.abs(dy) ? (dx > 0 ? 0 : ops.length - 1) : (ops.length === 3 ? 1 : -1);
+  const fuerza = () => Math.max(Math.abs(dx), -dy);
+  card.querySelectorAll('.arrastre').forEach(z => {
+    z.onpointerdown = ev => { arr = true; x0 = ev.clientX; y0 = ev.clientY; dx = dy = 0; try { z.setPointerCapture(ev.pointerId); } catch (_) {} card.style.transition = 'none'; };
+    z.onpointermove = ev => {
+      if (!arr) return;
+      dx = ev.clientX - x0; dy = Math.min(0, ev.clientY - y0);
+      card.style.transform = `translate(${dx}px,${dy}px) rotate(${dx / 30}deg)`;
+      const k = dir(), f = fuerza();
+      if (f > 36 && k >= 0) { hint.textContent = ops[k].t; hint.className = 'hintsw ver ' + (CLASE[ops[k].v] || ''); hint.style.opacity = Math.min(1, f / 110); }
+      else hint.className = 'hintsw';
+    };
+    const soltar = () => {
+      if (!arr) return; arr = false;
+      const k = dir();
+      if (fuerza() > 110 && k >= 0) {
+        card.style.transition = 'transform .18s ease-in,opacity .18s'; card.style.opacity = '0';
+        card.style.transform = `translate(${dx * 3}px,${Math.min(dy * 3, 0)}px) rotate(${dx / 10}deg)`;
+        const r = card.getBoundingClientRect(); chispas(r.left + r.width / 2, r.top + 30, CLASE[ops[k].v]);
+        setTimeout(() => enJuego === j && avanzarEscena(ops[k].v, ops[k]), 170);
+      } else { card.style.transition = 'transform .2s'; card.style.transform = ''; hint.className = 'hintsw'; }
+    };
+    z.onpointerup = soltar; z.onpointercancel = soltar;
+  });
 }
 
 // ---------- Para vos, la reunión, producto y guiones
@@ -1624,10 +1796,15 @@ function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add
 // ================= eventos
 document.addEventListener('click', ev => {
   if (enJuego) {
-    const b = ev.target.closest('[data-jop],[data-jseguir],[data-jlibre],[data-jenviar],[data-jsalir],[data-jlista]');
+    const b = ev.target.closest('[data-jop],[data-jseguir],[data-jlibre],[data-jenviar],[data-jsalir],[data-jlista],[data-jrapida],[data-jdeshacer],[data-jsaltear],[data-jvolver],[data-jdictar]');
     if (b) {
-      const e = enJuego.escenas[enJuego.i];
-      if (b.dataset.jop !== undefined) return avanzarEscena(e.ops[+b.dataset.jop].v);
+      const e = enJuego.escenas[enJuego.i], rc = b.getBoundingClientRect();
+      if (b.dataset.jop !== undefined) { const o = e.ops[+b.dataset.jop]; chispas(ev.clientX || rc.left + rc.width / 2, ev.clientY || rc.top + rc.height / 2, CLASE[o.v]); return avanzarEscena(o.v, o); }
+      if (b.dataset.jrapida !== undefined) return avanzarEscena(b.dataset.jrapida);
+      if (b.dataset.jdeshacer !== undefined) return deshacer();
+      if (b.dataset.jsaltear !== undefined) return avanzarEscena();
+      if (b.dataset.jvolver !== undefined) return irA(b.dataset.jvolver);
+      if (b.dataset.jdictar !== undefined) return dictar();
       if (b.dataset.jseguir !== undefined) return avanzarEscena();
       if (b.dataset.jlibre !== undefined) { enJuego.libre = b.dataset.jlibre === '1'; return pintarEscena(); }
       if (b.dataset.jenviar !== undefined) { const t = ($('#j-lib') || {}).value || ''; if (!t.trim()) return toast('Escribí tu respuesta primero.'); return avanzarEscena(t.trim()); }
@@ -1655,6 +1832,17 @@ document.addEventListener('click', ev => {
   if (vb) return abrirVista(vb.dataset.vista);
   const q = ev.target.closest('.chip,.av,a[data-id]');
   if (q && q.dataset.id) { ev.preventDefault(); abrir(q.dataset.id); }
+});
+document.addEventListener('keydown', ev => {
+  const j = enJuego; if (!j || ev.metaKey || ev.altKey || ev.ctrlKey || $('#visor').classList.contains('abierto')) return;
+  const clic = s => { const b = document.querySelector(s); if (b && !b.disabled) b.click(); }, e = j.escenas[j.i], k = ev.key.toLowerCase();
+  if (ev.target.tagName === 'TEXTAREA') { if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); clic('[data-jenviar]'); } return; }
+  if (ev.target.closest && ev.target.closest('button') && (ev.key === 'Enter' || ev.key === ' ')) return;
+  if (/^[1-9]$/.test(ev.key) && e.tipo === 'pregunta') { clic(`[data-jop="${+ev.key - 1}"]`); }
+  else if ((ev.key === 'Enter' || ev.key === ' ' || ev.key === 'ArrowRight') && e.tipo !== 'pregunta') { ev.preventDefault(); clic('[data-jseguir],[data-jsalir]'); }
+  else if (ev.key === 'ArrowLeft' || ev.key === 'Backspace' || k === 'z') { ev.preventDefault(); deshacer(); }
+  else if (k === 'e' && e.libre && (e.ops || []).length) { ev.preventDefault(); clic('[data-jlibre="1"]'); }
+  else if (k === 's' && e.tipo === 'pregunta') clic('[data-jsaltear]');
 });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !cerrarVisor()) { if (enJuego) salirJuego(); else cerrar(); } });
 $('#visor-volver').onclick = () => cerrarVisor();
