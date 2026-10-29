@@ -1153,7 +1153,7 @@ function pintar() {
     <div><small>Socios</small><b>${n.socios ?? '—'}</b></div><div><small>${dias != null && dias >= 0 ? 'Lanzamiento' : 'Velocidad'}</small><b>${dias != null && dias >= 0 ? dias + ' d' : (n.velocidad ?? '—')}</b></div></div>
     <h2>El equipo</h2>${of.empleados.map(e => { const st = estadoReal(e); return `<div class="fila"><i style="background:${COLOR[st]}"></i><div><b style="font-weight:500">${esc(e.nombre)}</b> · ${esc(st === 'trabajando' && e.estado !== 'trabajando' ? 'trabajando ahora' : e.resumen.length > 90 ? e.resumen.slice(0, 88) + '…' : e.resumen)}</div></div>`; }).join('')}
     <div class="nota" style="margin-top:12px">Claude, últimos 7 días: ${u.turnos || 0} turnos · ${String(u.minutos || 0).replace('.', ',')} min (Sonnet)</div>`;
-  const reu = of.reunion, nGuiones = (of.guiones || []).filter(g => (g.estado || 'propuesta') === 'propuesta').length;
+  const reu = of.reunion, nGuiones = (of.guiones || []).filter(g => (g.estado || 'propuesta') === 'propuesta').length, nInf = (of.influencers || []).filter(x => (x.estado || 'propuesta') === 'propuesta').length;
   $('#dock').innerHTML = of.empleados.map(e => {
     const st = estadoReal(e);
     return `<button class="av${abierto === e.id ? ' sel' : ''}" data-id="${e.id}" title="${esc(e.nombre + ' · ' + PALABRA[st])}"><span class="cara">${INICIAL[e.id] || e.nombre[0]}<span class="pt" style="background:${COLOR[st]}"></span></span><small>${esc(e.nombre.split(' ')[0])}</small></button>`;
@@ -1161,11 +1161,12 @@ function pintar() {
     <button class="av txt${vista === 'reunion' ? ' sel' : ''}" data-vista="reunion"><span class="cara">R${reunionPendiente() ? `<b>${(reu.sin_responder || 0) + (reu.ideas_sin_decidir || 0)}</b>` : ''}</span><small>Reunión</small></button>
     <button class="av txt${vista === 'producto' ? ' sel' : ''}" data-vista="producto"><span class="cara">P${(of.propuestas || []).filter(x => (x.estado || 'propuesta') === 'propuesta').length ? `<b>${of.propuestas.filter(x => (x.estado || 'propuesta') === 'propuesta').length}</b>` : ''}</span><small>Producto</small></button>
     <button class="av txt${vista === 'guiones' ? ' sel' : ''}" data-vista="guiones"><span class="cara">G${nGuiones ? `<b>${nGuiones}</b>` : ''}</span><small>Guiones</small></button>
+    <button class="av txt${vista === 'influencers' ? ' sel' : ''}" data-vista="influencers"><span class="cara">I${nInf ? `<b>${nInf}</b>` : ''}</span><small>Creadores</small></button>
     <button class="av txt${vista === 'paravos' ? ' sel' : ''}" data-vista="paravos"><span class="cara">!${total ? `<b>${total}</b>` : ''}</span><small>Para vos</small></button>`;
   if (enJuego) { /* en plena reunión: no se pisa la escena */ }
   else if (abierto) abrir(abierto, true);
   else if (vista) abrirVista(vista, true);
-  else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos', 'producto', 'guiones'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
+  else if (desdeLink) { const id = desdeLink; desdeLink = null; setTimeout(() => (['reunion', 'paravos', 'producto', 'guiones', 'influencers'].includes(id) ? abrirVista(id) : abrir(id)), 500); }
 }
 
 function abrirPanel(html, refresco, ancho) {
@@ -1266,10 +1267,21 @@ function escenasDe(clave) {
           ${x.diseno ? `<span><button class="btn" data-pieza="${esc(x.diseno)}">Ver la lámina</button></span>` : ''}`, fichas: [['Precio sugerido', x.precio_sugerido], ['Costo estimado', x.costo_estimado], ['Lanzamiento', x.lanzamiento_sugerido]],
         ops: [{t: 'La hacemos', v: 'hacerla'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'Descartar', v: 'descartada'}], alElegir: v => decidirPropuesta(x.archivo, v, x.id)});
     cierre('tendencias', 'Listo. Con las que dijiste que sí, arranco con proveedores y costos.');
+  } else if (clave === 'influencers') {
+    const nuevos = (of.influencers || []).filter(x => (x.estado || 'propuesta') === 'propuesta');
+    if (!nuevos.length) return [];
+    sc.push({qid: 'influencers', tipo: 'dice', texto: `Mateo, encontré ${nuevos.length} ${nuevos.length === 1 ? 'persona' : 'personas'} que podrían encajar con GROSO. No le escribo a nadie hasta que me digas.`});
+    for (const x of nuevos)
+      sc.push({qid: 'influencers', tipo: 'pregunta', etiqueta: x.nivel ? 'Nivel ' + x.nivel : 'Candidato', resumen: x.usuario, texto: `${x.usuario} · ${x.plataforma || ''} ${x.seguidores_aprox || ''}. ${corto(x.por_que_encaja, 220)}`,
+        masTitulo: 'Ver riesgos y perfil', mas: `${x.estilo ? `<span><b>Estilo:</b> ${esc(x.estilo)}</span>` : ''}${x.ciudad ? `<span><b>Ciudad:</b> ${esc(x.ciudad)}</span>` : ''}${x.riesgos ? `<span><b>Riesgos:</b> ${esc(x.riesgos)}</span>` : ''}
+          <span>${x.verificado ? 'Perfil verificado.' : 'Perfil sin verificar.'} ${linkA(x.link, 'ver')}</span>`,
+        fichas: [['Plataforma', x.plataforma], ['Seguidores', x.seguidores_aprox], ['Ciudad', x.ciudad], ['Nivel', x.nivel]],
+        ops: [{t: 'Sí, hablale', v: 'hablarle'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'No me sirve', v: 'descartado'}], alElegir: v => decidirInfluencer(x.usuario, v)});
+    cierre('influencers', 'Listo. A los que dijiste que sí les preparo el mensaje y el acuerdo, para que lo mires antes de mandar nada.');
   }
   return sc;
 }
-const CLASE = {va: 'si', hacerla: 'si', Aprobada: 'si', 'mas adelante': 'des', 'Más adelante': 'des', descartado: 'no', descartada: 'no', Descartada: 'no'};
+const CLASE = {va: 'si', hacerla: 'si', hablarle: 'si', Aprobada: 'si', 'mas adelante': 'des', 'Más adelante': 'des', descartado: 'no', descartada: 'no', Descartada: 'no'};
 const REACC = {
   si: ['Dale, lo preparo.', 'Perfecto, avanzo con eso.', 'Anotado, va.', 'Excelente, arranco.'],
   des: ['Va, lo dejo para más adelante.', 'Entendido, queda en espera.', 'Perfecto, lo guardo.'],
@@ -1429,7 +1441,7 @@ function armarSwipe(e) {
 // ---------- Para vos, la reunión, producto y guiones
 function abrirVista(cual, refresco, lista) {
   const of = datos; if (!of) return;
-  if (!refresco && !lista && ['reunion', 'guiones', 'producto'].includes(cual) && jugar(cual)) return;
+  if (!refresco && !lista && ['reunion', 'guiones', 'producto', 'influencers'].includes(cual) && jugar(cual)) return;
   abierto = null; vista = cual;
   if (!refresco) delete mazoPos[cual];
   document.querySelectorAll('.av').forEach(b => b.classList.toggle('sel', b.dataset.vista === cual));
@@ -1446,6 +1458,7 @@ function abrirVista(cual, refresco, lista) {
         const botones = p.hecho_boton ? `<div class="resp">${b('p', `data-hecho="${esc(p.id)}" data-como="mandado"`, 'Ya lo mandé')}${b('', `data-hecho="${esc(p.id)}" data-como="no corresponde"`, 'No corresponde')}</div>`
           : p.abre === 'reunion' ? `<div class="resp"><button class="p" data-vista="reunion">Abrir la reunión</button></div>`
           : p.abre === 'producto' ? `<div class="resp"><button class="p" data-vista="producto">Ver las propuestas</button></div>`
+          : p.abre === 'influencers' ? `<div class="resp"><button class="p" data-vista="influencers">Ver los candidatos</button></div>`
           : p.abre === 'guiones' ? `<div class="resp"><button class="p" data-vista="guiones">Ver los guiones</button></div>`
           : p.arreglo ? `<div class="resp">${b('p', `data-arreglo="${esc(p.arreglo)}" data-accion="visto" data-emp="${esc(p.quien)}"`, 'Ya lo hice')}</div>` : '';
         return `<div class="tarea"><span class="mini">${INICIAL[p.quien] || '·'}</span><div><small>${esc(e.nombre || p.quien)}</small><p>${esc(p.texto)}</p></div>${botones}</div>`;
@@ -1473,6 +1486,21 @@ function abrirVista(cual, refresco, lista) {
       ${items.length ? mazoHTML('producto', items) : `<p class="res">${ps.length ? 'No queda nada por decidir.' : `Todavía no hay propuestas. Tendencias arma las primeras ${esc(tend.proximo ? en(fecha(tend.proximo)) : 'pronto')}.`}</p>`}
       ${chicas(ps.filter(x => x.estado && x.estado !== 'propuesta').map(x => `${x.prenda} · ${ESTADO[x.estado] || x.estado}`))}`, refresco, true);
     cargarFotos();
+    return;
+  }
+  if (cual === 'influencers') {
+    if (!refresco) enfocar('influencers');
+    const xs = of.influencers || [];
+    const ESTADO = {hablarle: 'Hablarle', 'mas adelante': 'Más adelante', descartado: 'No'};
+    const nuevos = xs.filter(x => (x.estado || 'propuesta') === 'propuesta');
+    const items = nuevos.map(x => ({id: x.usuario, ref: x, quien: 'Influencers', qid: 'influencers', tag: x.nivel ? 'Nivel ' + x.nivel : 'Candidato', cuando: (x.fecha || '').slice(8, 10) + '/' + (x.fecha || '').slice(5, 7),
+      titulo: x.usuario, sub: x.por_que_encaja, chips: [['Plataforma', x.plataforma], ['Seguidores', x.seguidores_aprox], ['Ciudad', x.ciudad], ['Estilo', x.estilo]],
+      masTitulo: 'Ver riesgos y perfil', mas: `${x.riesgos ? `<span><b>Riesgos:</b> ${esc(x.riesgos)}</span>` : ''}<span>${x.verificado ? 'Perfil verificado.' : 'Perfil sin verificar.'} ${linkA(x.link, 'ver')}</span>`,
+      ops: [{t: 'Sí, hablale', v: 'hablarle'}, {t: 'Más adelante', v: 'mas adelante'}, {t: 'No me sirve', v: 'descartado'}]}));
+    const inf = of.empleados.find(e => e.id === 'influencers') || {};
+    abrirPanel(`<div class="cab2"><h2>Creadores para canje</h2></div>
+      ${items.length ? mazoHTML('influencers', items) : `<p class="res">${xs.length ? 'No queda nadie por decidir.' : `Todavía no hay candidatos. Influencers busca los primeros ${esc(inf.proximo ? en(fecha(inf.proximo)) : 'pronto')}.`}</p>`}
+      ${chicas(xs.filter(x => x.estado && x.estado !== 'propuesta').map(x => `${x.usuario} · ${ESTADO[x.estado] || x.estado}`))}`, refresco, true);
     return;
   }
   if (cual === 'guiones') {
@@ -1541,7 +1569,20 @@ ELEGIR.reunion = (it, op) => {
 };
 LIBRE.reunion = (it, txt) => { borrador.respuestas[it.id] = txt; avanzar('reunion'); abrirVista('reunion', true); };
 ELEGIR.producto = (it, op) => { avanzar('producto', true); decidirPropuesta(it.ref.archivo, op.v, it.ref.id); };
+ELEGIR.influencers = (it, op) => { avanzar('influencers', true); decidirInfluencer(it.ref.usuario, op.v); };
 ELEGIR.guiones = (it, op) => { avanzar('guiones', true); decidirGuion(it.ref.archivo, op.v, it.ref.titulo); };
+async function decidirInfluencer(usuario, decision) {
+  try {
+    const cuando = new Date().toISOString().slice(0, 16);
+    await cambiarJSON('estado/influencers_decisiones.json', d => { d[usuario] = {estado: decision, decidido: cuando}; }, `Oficina: influencer ${usuario} → ${decision}`);
+    const x = (datos.influencers || []).find(y => y.usuario === usuario);
+    if (x) x.estado = decision;
+    const quedan = (datos.influencers || []).filter(y => (y.estado || 'propuesta') === 'propuesta').length;
+    if (!quedan) datos.pendientes = (datos.pendientes || []).filter(p => p.id !== 'influencers');
+    toast(decision === 'hablarle' ? 'Anotado: Influencers prepara el mensaje y el acuerdo (nada se manda solo).' : decision === 'descartado' ? 'Descartado: no lo vuelve a proponer.' : 'Anotado para más adelante.');
+    pintar();
+  } catch (err) { toast('No se pudo guardar: ' + err.message); }
+}
 async function decidirGuion(archivo, decision, titulo) {
   try {
     await cambiarJSON(archivo, d => { d.estado = decision; d.decidido = new Date().toISOString().slice(0, 16); }, `Oficina: guion "${titulo}" → ${decision}`);
@@ -1846,7 +1887,7 @@ document.addEventListener('keydown', ev => {
 });
 document.addEventListener('keydown', ev => { if (ev.key === 'Escape' && !cerrarVisor()) { if (enJuego) salirJuego(); else cerrar(); } });
 $('#visor-volver').onclick = () => cerrarVisor();
-addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos', 'producto', 'guiones'].includes(id) ? abrirVista(id) : abrir(id); });
+addEventListener('hashchange', () => { const id = decodeURIComponent(location.hash.slice(1)); if (!datos || !id) return; ['reunion', 'paravos', 'producto', 'guiones', 'influencers'].includes(id) ? abrirVista(id) : abrir(id); });
 $('#velo').onclick = cerrar;
 $('#paravos').onclick = () => abrirVista('paravos');
 $('#b-vista').onclick = () => { cerrar(); vistaGeneral(); };
